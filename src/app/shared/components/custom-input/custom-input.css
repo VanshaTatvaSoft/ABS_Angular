@@ -1,0 +1,22 @@
+::ng-deep .input-validation-error.mat-mdc-form-field .mdc-notched-outline__notch{
+  border-color: #f44336 !important;
+  border-width: 1px;
+  border-left: 0px !important;
+}
+::ng-deep .input-validation-error.mat-mdc-form-field .mdc-notched-outline__leading,
+::ng-deep .input-validation-error.mat-mdc-form-field .mdc-notched-outline__notch,
+::ng-deep .input-validation-error.mat-mdc-form-field .mdc-notched-outline__trailing {
+  border-width: 1px;
+  border-color: #f44336 !important;
+}
+
+::ng-deep .input-validation-error.mat-mdc-form-field .mdc-floating-label {
+  color: #f44336 !important;
+  background-color: white;
+  padding: 0 4px;
+}
+
+
+/* .input-validation-error{
+  border-color: red !important;
+} */

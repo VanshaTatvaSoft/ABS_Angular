@@ -1,0 +1,95 @@
+<mat-form-field
+  [appearance]="customInput.appearance"
+  class="w-100 mt-3"
+  subscriptSizing="dynamic"
+  [ngClass]="{ 'input-validation-error': formControl.invalid && (formControl.dirty || formControl.touched) }"
+>
+  <!-- label -->
+  <mat-label>{{ customInput.label }}</mat-label>
+
+  <!-- input field -->
+  @if(customInput.type === "text" || customInput.type === "number" || customInput.type === "email") {
+  <input
+    matInput
+    [type]="customInput.type"
+    [placeholder]="customInput.placeholder"
+    [value]="customInput.value"
+    (input)="onInput($event)"
+    (blur)="onTouched()"
+    [id]="customInput.id"
+    [name]="customInput.name"
+    [disabled]="customInput.disabled"
+    [class]="customInput.class"
+    autocomplete="off"
+  />
+  }
+
+  <!-- password input field -->
+  @if(customInput.type === "password"){
+    <input
+    matInput
+    [type]="customInput.type"
+    [placeholder]="customInput.placeholder"
+    [value]="customInput.value"
+    (input)="onInput($event)"
+    (blur)="onTouched()"
+    [id]="customInput.id"
+    [name]="customInput.name"
+    [disabled]="customInput.disabled"
+    [class]="customInput.class"
+    autocomplete="off"
+    appTogglePassword
+  />
+  }
+
+  <!-- select list -->
+  @if(customInput.type === "select") {
+  <mat-select
+    [value]="customInput.value"
+    (selectionChange)="onSelect($event)"
+    [disabled]="customInput.disabled"
+    [id]="customInput.id"
+  >
+    @for(option of customInput.options; track $index) {
+    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+    }
+  </mat-select>
+  }
+
+  <!-- icon -->
+  @if(customInput.icon){
+  <mat-icon matSuffix>
+    {{ customInput.icon }}
+  </mat-icon>
+  }
+
+  <!-- hint -->
+  @if(!customInput.disabled && customInput.hint){
+  <mat-hint>
+    {{ customInput.hint }}
+  </mat-hint>
+  }
+
+</mat-form-field>
+<!-- error messages -->
+<!-- <mat-error>
+  @for (error of getErrorKeys(); track $index)
+  {
+    @if(formControl.invalid && (formControl.touched || formControl.dirty))
+    {
+      {{ getErrorMessage(error) }}
+    }
+  }
+</mat-error> -->
+<mat-error *ngIf="formControl.invalid && (formControl.touched || formControl.dirty)">
+  @if (formControl.hasError('required')) {
+    {{ getErrorMessage('required') }}
+  } @else {
+    @for (error of getErrorKeys(); track $index) {
+      @if (error !== 'required') {
+        {{ getErrorMessage(error) }}<br />
+      }
+    }
+  }
+</mat-error>
+

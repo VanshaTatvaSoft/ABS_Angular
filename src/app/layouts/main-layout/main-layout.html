@@ -1,0 +1,213 @@
+<app-loader *ngIf="isLoading"></app-loader>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+  <div class="app-wrapper">
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-lte-toggle="sidebar" role="button">
+              <i class="bi bi-list"></i>
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link text-dark" data-lte-toggle="fullscreen">
+              <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+              <i
+                data-lte-icon="minimize"
+                class="bi bi-fullscreen-exit"
+                style="display: none"
+              ></i>
+            </a>
+          </li>
+          <li class="nav-item dropdown" id="notificationIconBell">
+            <a class="nav-link text-dark" data-bs-toggle="dropdown">
+              <i class="bi bi-bell-fill"></i>
+              <span
+                class="navbar-badge badge text-bg-warning"
+                id="notificationCount"
+                >15</span
+              >
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+              <span class="dropdown-item dropdown-header">Notifications</span>
+              <div class="dropdown-divider"></div>
+              <div
+                id="notificationlist"
+                style="max-height: 300px; overflow-y: auto"
+              ></div>
+              <a class="dropdown-item dropdown-footer" id="MarkAllRead">
+                Mark All As Read
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown user-menu">
+            <a
+              class="nav-link dropdown-toggle text-dark"
+              data-bs-toggle="dropdown"
+            >
+              <span class="d-none d-md-inline">{{ this.userName }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li
+                class="user-header text-bg-secondary"
+                style="min-height: auto"
+              >
+                <p>{{ this.userName }} - {{ this.userRole }}</p>
+              </li>
+              <li class="user-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <button class="btn btn-primary" (click)="myProfileClicked()">
+                      <i class="bi bi-person-lines-fill"></i>
+                      My Profile
+                    </button>
+                  </div>
+                  <div>
+                    <button
+                      class="btn btn-outline-danger"
+                      style="width: 117px"
+                      (click)="logout()"
+                    >
+                      <i class="bi bi-box-arrow-right"></i>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="d-flex justify-content-center align-items-center mt-2"
+                >
+                  <div class="w-100">
+                    <button class="btn btn-warning w-100">
+                      <i class="bi bi-lock-fill"></i>
+                      Change Password
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+      <div class="sidebar-brand">
+        <a class="brand-link">
+          <span class="brand-text fs-6 fw-light"
+            >Appointment Management System</span
+          >
+        </a>
+      </div>
+      <div class="sidebar-wrapper">
+        <nav class="mt-2">
+          <ul
+            class="nav sidebar-menu flex-column"
+            data-lte-toggle="treeview"
+            role="menu"
+            data-accordion="false"
+          >
+            @if(userRole == "admin"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="DashboardLink"
+                routerLink="/dashboard"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>Dashboard</p>
+              </a>
+            </li>
+            } @if(userRole == "admin"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="ServicesLink"
+                routerLink="/services"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>Services</p>
+              </a>
+            </li>
+            } @if(userRole == "admin"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="ProvidersLink"
+                routerLink="/providers"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>Providers</p>
+              </a>
+            </li>
+            } @if(userRole == "provider"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="MyServicesLink"
+                routerLink="/my-services"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>My Services</p>
+              </a>
+            </li>
+            } @if(userRole == "client"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="BookApointmentLink"
+                routerLink="/book-appointment"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>Book Appointment</p>
+              </a>
+            </li>
+            } @if(userRole == "client"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="MyBookingLink"
+                routerLink="/my-bookings"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>My Booking</p>
+              </a>
+            </li>
+            } @if(userRole == "provider"){
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                id="MyScheduleLink"
+                routerLink="/my-schedule"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <p>My Schedule</p>
+              </a>
+            </li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </aside>
+    <main class="app-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+  <div class="loader-overlay" id="loader">
+    <div class="three-body">
+      <div class="three-body__dot"></div>
+      <div class="three-body__dot"></div>
+      <div class="three-body__dot"></div>
+    </div>
+  </div>
+  <div id="MyProfileModalContainer"></div>
+</body>
+
+

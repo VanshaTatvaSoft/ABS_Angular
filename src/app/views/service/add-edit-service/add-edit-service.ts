@@ -1,0 +1,113 @@
+import { Component, Inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogContent,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ServiceApi } from '../../../core/services/service/service';
+import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-add-edit-service',
+  imports: [
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatDialogActions,
+    MatDialogContent,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    CommonModule,
+  ],
+  templateUrl: './add-edit-service.html',
+  styleUrl: './add-edit-service.css',
+})
+export class AddEditService {
+  serviceForm: FormGroup;
+  isSaving = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<AddEditService>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private serviceApi: ServiceApi,
+    private toastService: SweetToastService
+  ) {
+    this.serviceForm = this.fb.group({
+      serviceId: [data?.serviceId ?? null],
+      serviceName: [data?.serviceName ?? '', Validators.required],
+      serviceDesc: [data?.serviceDesc ?? '', Validators.required],
+      price: [data?.price ?? '', [Validators.required, Validators.min(1)]],
+      duration: [data?.duration ?? '', [Validators.required]],
+    });
+  }
+
+  get serviceNameControll(): FormControl {
+    return this.serviceForm.get('serviceName') as FormControl;
+  }
+
+  get serviceDescControll(): FormControl {
+    return this.serviceForm.get('serviceDesc') as FormControl;
+  }
+
+  get priceControll(): FormControl {
+    return this.serviceForm.get('price') as FormControl;
+  }
+
+  get durationControll(): FormControl {
+    return this.serviceForm.get('duration') as FormControl;
+  }
+
+  save() {
+    if (this.serviceForm.invalid) return;
+
+    const formValue = this.serviceForm.value;
+    this.isSaving = true;
+
+    const payload = {
+      ...formValue,
+      // convert time string to TimeSpan-compatible format
+      duration: formValue.duration.length === 5 ? formValue.duration + ':00' : formValue.duration,
+    };
+
+    const action$ = formValue.serviceId
+      ? this.serviceApi.editService(payload)
+      : this.serviceApi.addService(payload);
+
+    action$.subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.toastService.showSuccess(res.message || 'Saved');
+          this.dialogRef.close(true); // only close on success
+          this.isSaving = false;
+        } else {
+          this.toastService.showError(res.message || 'Something went wrong');
+          this.isSaving = false;
+        }
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.toastService.showError('An error occurred');
+        this.isSaving = false;
+      },
+    });
+
+  }
+
+  cancel() {
+    this.dialogRef.close(null);
+  }
+}

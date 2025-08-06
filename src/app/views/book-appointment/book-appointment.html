@@ -1,0 +1,156 @@
+<div class="d-flex justify-content-between align-items-center px-5 mt-2">
+  <h1>Bookings</h1>
+  <div class="d-flex align-items-center justify-content-center">
+    <div>
+      <span class="fs-3 text-secondary">{{ data?.clientEmail }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="row mx-4">
+  <div class="card card-primary card-outline mb-4">
+    <ng-container *ngIf="bookingForm; else loading">
+      <form [formGroup]="bookingForm" (ngSubmit)="submit()">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="clientName" />
+                <mat-error *ngIf="bookingForm.get('clientName')?.hasError('required') && (bookingForm.get('clientName')?.touched || bookingForm.get('clientName')?.dirty)">
+                  Name is required.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Phone No</mat-label>
+                <input matInput formControlName="clientPhoneNo" />
+                <mat-error *ngIf="bookingForm.get('clientPhoneNo')?.touched || bookingForm.get('clientPhoneNo')?.dirty">
+                  <span *ngIf="bookingForm.get('clientPhoneNo')?.hasError('required')">Phone number is required</span>
+                  <span *ngIf="bookingForm.get('clientPhoneNo')?.hasError('invalidPhone')">Enter valid phone number</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4 col-md-12 col-sm-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Choose a date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="appointmentDate" [min]="minDate" />
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker" ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="bookingForm.get('appointmentDate')?.touched || bookingForm.get('appointmentDate')?.dirty">
+                  <span *ngIf="bookingForm.get('appointmentDate')?.hasError('required')">Appointment date is required</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-2">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Set Start Time</mat-label>
+                <input matInput [ngxTimepicker]="startTimePicker" formControlName="startTime" readonly />
+                <ngx-material-timepicker
+                  #startTimePicker
+                ></ngx-material-timepicker>
+                <mat-error *ngIf="bookingForm.get('startTime')?.touched || bookingForm.get('startTime')?.dirty">
+                  <span *ngIf="bookingForm.get('startTime')?.hasError('required')">Appointment start time is required</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-2">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Set End Time</mat-label>
+                <input matInput [ngxTimepicker]="endTimePicker" formControlName="endTime" readonly />
+                <ngx-material-timepicker #endTimePicker></ngx-material-timepicker>
+                <mat-error *ngIf="bookingForm.get('endTime')?.touched || bookingForm.get('endTime')?.dirty">
+                  <span *ngIf="bookingForm.get('endTime')?.hasError('required')">Appointment end time is required</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-lg-4">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Service</mat-label>
+                <mat-select panelClass="service-panel" formControlName="serviceId">
+                  @for (service of data?.serviceList; track service.serviceId) {
+                  <mat-option [value]="service.serviceId">
+                    <div class="service-option">
+                      <div class="title">{{ service.serviceName }}</div>
+                      <div class="details">
+                        <span class="title"> Price</span> - ₹{{service.price}} | <span class="title"> Duration</span> - {{ service.duration | timeFormatPipe : "min" }} mins
+                      </div>
+                    </div>
+                  </mat-option>
+                  }
+                </mat-select>
+                <mat-error *ngIf="bookingForm.get('serviceId')?.touched || bookingForm.get('serviceId')?.dirty">
+                  <span *ngIf="bookingForm.get('serviceId')?.hasError('required')">Select service</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <!-- <div class="col-lg-2 col-md-2">
+              <button  type="button" matFab extended class="w-100"
+              [disabled]=" !bookingForm.get('startTime')?.value || !bookingForm.get('endTime')?.value || !bookingForm.get('appointmentDate')?.value || bookingForm.hasError('insufficientDuration') || bookingForm.errors?.['startAfterEnd'] || bookingForm.errors?.['timeSame'] || !bookingForm.get('serviceId')?.value"
+              (click)="searchProvider()" >
+                <mat-icon>search</mat-icon>
+                <span class="fs-4">Search</span>
+              </button>
+            </div> -->
+            <div class="col-lg-2 col-md-2">
+              <mat-error *ngIf="bookingForm.errors?.['timeSame']">
+                Start time and end time cannot be the same
+              </mat-error>
+              <mat-error *ngIf="bookingForm.errors?.['startAfterEnd']">
+                Start time must be before end time
+              </mat-error>
+              <mat-error *ngIf="bookingForm.hasError('insufficientDuration')">
+                Start time and end time should add up to the service duration
+              </mat-error>
+            </div>
+          </div>
+          <div class="row" style="overflow-y: auto">
+            <div>
+              @if(data?.providerList){
+                <app-generic-table
+                  [data]="data?.providerList"
+                  [columns]="columns"
+                  [isPaginated]="false"
+                  [columnTemplates]="{ actions: actionBtns }"
+                  [actionColumnName]="'Select Slot'">
+                </app-generic-table>
+              }
+              @else {
+                <div class="d-flex justify-content-center align-items-center">
+                  No Providers
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary me-2" id="form-submit-btn"
+            [disabled]="bookingForm.invalid || !providerId || !selectedSlot">
+              Book
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="form-reset-btn" (click)="reset()">
+              Reset
+            </button>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="text-center p-5 d-flex justify-content-center align-items-center">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>
+
+<ng-template #actionBtns let-row>
+  <button type="button" mat-icon-button color="primary" (click)="bookSlotBtnClicked(row.providerId)">
+    <mat-icon aria-label="Example icon-button with a heart icon">assignment_turned_in</mat-icon>
+  </button>
+</ng-template>

@@ -1,0 +1,15 @@
+<form [formGroup]="form" (ngSubmit)="submitForm()">
+  <ng-container *ngFor="let field of fields">
+    <app-custom-input
+      [formControl]="getControl(field.key)"
+      [customInput]="field.customInput"
+      [customErrors]="getCustomErrors(field)"
+    ></app-custom-input>
+  </ng-container>
+
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <button class="btn btn-primary w-100" type="submit" [disabled]="form.invalid">
+      Submit
+    </button>
+  </div>
+</form>

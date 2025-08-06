@@ -1,0 +1,14 @@
+.service-option {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.service-option .title {
+  font-weight: 600;
+}
+
+.service-option .details {
+  font-size: 13px;
+  color: gray;
+}

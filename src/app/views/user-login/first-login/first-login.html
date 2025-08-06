@@ -1,0 +1,77 @@
+
+<div>
+  <h1 class="">Change Password</h1>
+</div>
+<form [formGroup]="firstLoginForm" (ngSubmit)="onSubmit()">
+  <div class="row">
+      <div class="col-12">
+          <input type="hidden" formControlName="userId">
+          <!-- Password -->
+          <div class="row">
+            <div class="col-12">
+              <app-custom-input
+                class="form-floating input-countainer mb-3"
+                formControlName="password"
+                [formControl]="passwordControl"
+                [customInput]="{
+                  appearance: 'outline',
+                  label: 'Password',
+                  type: 'password',
+                  placeholder: 'Enter Password',
+                  value: '',
+                  id: 'password',
+                  name: 'password',
+                  disabled: false
+                }"
+                [customErrors]="{
+                  required: 'Password is required',
+                  noUpperCase: 'Must contain at least 1 uppercase letter',
+                  noLowerCase: 'Must contain at least 1 lowercase letter',
+                  noSpecialChar: 'Must contain at least 1 special character',
+                  tooShort: 'Must be at least 8 characters long'
+                }">
+              </app-custom-input>
+            </div>
+          </div>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-12">
+          <!-- Confirm Password -->
+          <div class="row">
+            <div class="col-12">
+              <app-custom-input
+                class="form-floating input-countainer mb-3"
+                formControlName="confirmPassword"
+                [formControl]="confirmPasswordControl"
+                [customInput]="{
+                  appearance: 'outline',
+                  label: 'Confirm Password',
+                  type: 'password',
+                  placeholder: 'Confirm Password',
+                  value: '',
+                  id: 'confirmPassword',
+                  name: 'confirmPassword',
+                  disabled: false
+                }"
+                [customErrors]="{
+                  required: 'Confirm Password is required',
+                  passwordsMismatch: 'Password and Confirm Password must match',
+                  noUpperCase: 'Must contain at least 1 uppercase letter',
+                  noLowerCase: 'Must contain at least 1 lowercase letter',
+                  noSpecialChar: 'Must contain at least 1 special character',
+                  tooShort: 'Must be at least 8 characters long'
+                }">
+              </app-custom-input>
+              <div class="text-danger" *ngIf="firstLoginForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !firstLoginForm.get('confirmPassword')?.errors?.['required']">
+                Password and Confirm Password must match
+              </div>
+            </div>
+          </div>
+      </div>
+  </div>
+  <div class="d-flex justify-content-center align-items-center mt-3">
+      <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" [disabled]="this.firstLoginForm.invalid">Submit</button>
+  </div>
+  {{ firstLoginForm.value | json }}
+</form>

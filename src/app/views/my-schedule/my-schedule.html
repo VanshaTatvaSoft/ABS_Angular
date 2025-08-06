@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-between align-items-center px-5 mt-2">
+  <h1>My Schedule</h1>
+  <div class="d-flex align-items-center justify-content-center">
+    <div class="me-2">
+      <input type="text" class="form-control" placeholder="Search" [formControl]="searchControl" style="height: 100%;">
+    </div>
+    <div>
+      <div class="d-flex justify-content-end">
+        <app-custom-input
+        [customInput]="{
+          appearance: 'outline',
+          label: 'Options',
+          type: 'select',
+          placeholder: '',
+          id: 'role',
+          name: 'role',
+          disabled: false,
+          options:filterOptions
+        }"
+        [formControl]="filterOptionControl"
+        (valueChange)="onFilterChange($event)">
+        </app-custom-input>
+    </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #actionBtns let-row>
+  @if(row.status === 'booked'){
+    <button matMiniFab color="primary" class="mt-1 mx-2" aria-label="Example icon button with a home icon"
+    (click)="completeAppointment(row.appointmentId, row.appointmentDate, row.startTime)">
+      <!-- <mat-icon><i class="bi bi-check-square"></i></mat-icon> -->
+       <mat-icon>done_all</mat-icon>
+    </button>
+  }
+</ng-template>
+
+<app-generic-table
+    [data]="data?.myScheduleList"
+    [columns]="columns"
+    [totalCount]="totalCount"
+    [pageSize]="pageSize"
+    [pageNumber]="page"
+    [columnTemplates]="{ actions: actionBtns }"
+    [actionColumnName] ="'Complete'"
+    (pageChange)="onPageChange($event)"
+    (sortChange)="onSortChange($event)">
+</app-generic-table>

@@ -1,0 +1,258 @@
+<div class="app-content-header">
+  <div class="container-fluid">
+      <div class="row">
+          <div class="col-sm-6 d-flex justify-content-start align-items-center">
+              <h1 class="mb-0">Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+              <div class="d-flex justify-content-end">
+                  <app-custom-input
+                  formControlName="dashboardOption"
+                  [customInput]="{
+                    appearance: 'outline',
+                    label: 'Options',
+                    type: 'select',
+                    placeholder: '',
+                    id: 'role',
+                    name: 'role',
+                    disabled: false,
+                    options:DropdownOptions
+                  }"
+                  [formControl]="dashboardOptionControl"
+                  (valueChange)="valuechange($event)">
+                  </app-custom-input>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<div class="app-content">
+  <div class="container-fluid">
+      <div id="DashboardCardContainer">
+        <div class="row">
+          <!-- @* customer *@ -->
+          <div class="col-lg-3 col-6">
+              <app-dashboard-card
+                  [value]="dashboardData.customerCount"
+                  [title]="'Customer'"
+                  [icon]="'../../../../assets/images/customers.png'"
+                  [color]="'primary'"
+                  [quickLink]="'/customer/list'"
+                  [quickLinkName]="'Customers'">
+              </app-dashboard-card>
+          </div>
+          <!-- @* provider *@ -->
+          <div class="col-lg-3 col-6">
+              <app-dashboard-card
+                  [value]="dashboardData.providerCount"
+                  [title]="'Provider'"
+                  [icon]="'../../../../assets/images/Providers.png'"
+                  [color]="'success'"
+                  [quickLink]="'/provider/list'"
+                  [quickLinkName]="'Providers'">
+              </app-dashboard-card>
+          </div>
+          <!-- @* appointment *@ -->
+          <div class="col-lg-3 col-6">
+              <app-dashboard-card
+                  [value]="dashboardData.appointmentCount"
+                  [title]="'Appointments'"
+                  [icon]="'../../../assets/images/Appointments.png'"
+                  [color]="'info'"
+                  [quickLink]="'/appointment/list'"
+                  [quickLinkName]="'Appointments'">
+              </app-dashboard-card>
+          </div>
+          <!-- @* services *@ -->
+          <div class="col-lg-3 col-6">
+              <app-dashboard-card
+                  [value]="dashboardData.serviceCount"
+                  [title]="'Services'"
+                  [icon]="'../../../assets/images/Services.png'"
+                  [color]="'danger'"
+                  [quickLink]="'/service/list'"
+                  [quickLinkName]="'Services'">
+              </app-dashboard-card>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-6">
+              <!-- @* Appointment Report *@ -->
+              <div class="card mb-3">
+                  <div class="card-header">
+                      <h5 class="card-title fw-bold">Appointment Report</h5>
+                      <div class="card-tools">
+                          <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                              <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                              <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <div class="progress-group mb-3">
+                                  <span class="fs-5">Booked Appointment</span>
+                                  <span class="float-end"><b>{{this.dashboardData.bookedAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                  <div class="progress progress-sm">
+                                      <div class="progress-bar text-bg-warning" [style.width.%]="dashboardData.bookedPercentage"></div>
+                                  </div>
+                              </div>
+                              <div class="progress-group mb-3">
+                                  <span class="fs-5">Completed Appointment</span>
+                                  <span
+                                      class="float-end"><b>{{this.dashboardData.completedAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                  <div class="progress progress-sm">
+                                      <div class="progress-bar text-bg-success" [style.width.%]="dashboardData.completedPercentage">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="progress-group">
+                                  <span class="fs-5">Canceld Appointment</span>
+                                  <span class="float-end"><b>{{this.dashboardData.cancledAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                  <div class="progress progress-sm">
+                                      <div class="progress-bar text-bg-danger" [style.width.%]="dashboardData.cancledPercentage"></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!-- @* Revenue Graph *@ -->
+              <div class="card mb-4">
+                  <div class="card-header">
+                      <h5 class="card-title fw-bold">Revenue Graph</h5>
+                      <div class="card-tools">
+                          <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                              <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                              <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <div class="p-1">
+                                  <canvas class="w-100" id="revenueChart" style="height: 200px !important;">
+
+                                  </canvas>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="card-footer">
+                      <div style="height: 30px;"></div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-6">
+              <!-- @* Top 3 provider *@ -->
+              <div class="card mb-4">
+                  <div class="card-header">
+                      <h5 class="card-title fw-bold">Top 3 Providers</h5>
+                      <div class="card-tools">
+                          <button type="button" id="Top3PoviderCard" class="btn btn-tool" data-lte-toggle="card-collapse">
+                              <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                              <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="card-body" style="height: 237px; overflow-y: auto;">
+                      <div class="row">
+                          <table class="table table-bordered">
+                              <thead>
+                                  <tr>
+                                      <th style="width: 10px">#</th>
+                                      <th style="width: 250px;">Name</th>
+                                      <th>Email</th>
+                                      <th style="width: 40px">Appointment Count</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                <!-- Check if there are no providers -->
+                                <tr *ngIf="dashboardData.providers.length === 0">
+                                  <td colspan="4">
+                                    <div class="d-flex justify-content-center align-items-center fw-bold">No Data Found</div>
+                                  </td>
+                                </tr>
+
+                                <!-- Loop through the providers -->
+                                <tr *ngFor="let u of dashboardData.providers; let index = index" class="align-middle">
+                                  <td>{{ index + 1 }}.</td>
+                                  <td>{{ u.name }}</td>
+                                  <td>{{ u.email }}</td>
+                                  <td>{{ u.count }}</td>
+                                </tr>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-lg-3 col-md-12 col-sm-3 col-12">
+                      <div class="row">
+                          <!-- @* Available Provider *@ -->
+                          <div class="col-12">
+                              <div class="small-box text-bg-warning">
+                                  <div class="inner">
+                                      <h3>{{this.dashboardData.availableProviderCount}}</h3>
+                                      <p>Available Providers</p>
+                                  </div>
+                                  <a href="#"
+                                      class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                                      style="height: 20px;">
+                                  </a>
+                              </div>
+                          </div>
+                          <!-- @* Total Revenue *@ -->
+                          <div class="col-12">
+                              <div class="small-box text-bg-info">
+                                  <div class="inner">
+                                      <h3>₹ {{this.dashboardData.totalRevenue}}</h3>
+                                      <p>Total Revenue</p>
+                                  </div>
+                                  <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                      <path
+                                          d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z">
+                                      </path>
+                                  </svg>
+                                  <a href="#"
+                                      class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
+                                      style="height: 20px;">
+                                  </a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- @* Service Chart *@ -->
+                  <div class="col-lg-9 col-md-12 col-sm-9 col-12">
+                      <div class="card mb-4">
+                          <div class="card-header">
+                              <h5 class="card-title fw-bold">Service Chart</h5>
+                              <div class="card-tools">
+                                  <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                                      <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                      <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                                  </button>
+                              </div>
+                          </div>
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-12">
+                                      <div class="p-1">
+                                          <canvas class="w-100" id="servicePieChart" style="height: 200px !important;">
+
+                                          </canvas>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      </div>
+  </div>
+</div>

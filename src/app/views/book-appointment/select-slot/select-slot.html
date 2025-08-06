@@ -1,0 +1,27 @@
+<h1 mat-dialog-title class="ps-3 pt-2">Edit Provider</h1>
+
+<mat-dialog-content>
+  <div class="list-group" style="height: 200px; overflow-y: auto;">
+    @if(this.data.availableSlot){
+      @for (s of this.data.availableSlot.slotsAvailable; track $index)
+      {
+          <label class="list-group-item list-group-item-action d-flex align-items-center gap-2 fs-4">
+              <input class="form-check-input me-2 SlotRadioBtn" type="radio" name="SlotRadioBtn" (change)="slotSelected(s.startTime, s.endTime)"/>
+              {{s.startTime | timeFormatPipe: '12hr' }} - {{s.endTime | timeFormatPipe: '12hr' }}
+          </label>
+      }
+    }
+    @else{
+      <div class="alert alert-warning text-center fw-semibold">
+        No slots available.
+      </div>
+    }
+</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!selectedSlot" (click)="submit()">
+    <span>Submit</span>
+  </button>
+</mat-dialog-actions>

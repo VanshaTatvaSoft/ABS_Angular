@@ -1,0 +1,21 @@
+<div class="d-flex justify-content-between align-items-center px-5 mt-2">
+  <h1>My Bookings</h1>
+</div>
+
+<app-generic-table
+  [data]="data?.myBookingList || []"
+  [columns]="columns"
+  [isPaginated]="false"
+  [columnTemplates]="{ actions: actionBtns }"
+  [actionColumnName] ="'Action'"
+>
+</app-generic-table>
+
+<ng-template #actionBtns let-row>
+  <button type="button" mat-icon-button color="primary" (click)="cancelAppointment(row.appointmentId, row.startTime, row.appointmentDate)">
+    <mat-icon>cancel</mat-icon>
+  </button>
+  <button type="button" mat-icon-button color="primary" (click)="rescheduleAppointment(row.appointmentId, row.startTime, row.appointmentDate)">
+    <mat-icon>access_time</mat-icon>
+  </button>
+</ng-template>
