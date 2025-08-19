@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SlotData } from '../../../core/models/available-slot.interface';
 import { LoaderService } from '../../../core/services/loader-service/loader-service';
 import {provideNativeDateAdapter} from '@angular/material/core';
+import { SignalrService } from '../../../core/services/signalr-service/signalr-service';
 
 @Component({
   selector: 'app-reschedule-appointment',
@@ -35,7 +36,8 @@ export class RescheduleAppointment implements OnInit {
     private fb: FormBuilder,
     private toastService: SweetToastService,
     private myBookingService: MyBookingService,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
+    private signalrService: SignalrService
   ) {
     this.appointmentId = data.appointmentId;
     this.appontmentDate = data.appointmentDate;
@@ -63,8 +65,7 @@ export class RescheduleAppointment implements OnInit {
     this.myBookingService.getSlotsForReschedule(this.appointmentId?? 0, this.appontmentDate).subscribe({
       next: (res) => {
         this.rescheduleData = res.data;
-        console.log("rescheduleData - ",this.rescheduleData);
-
+        // console.log("rescheduleData - ",this.rescheduleData);
         this.rescheduleData = res.data;
 
         this.rescheduleForm.patchValue({
@@ -72,7 +73,6 @@ export class RescheduleAppointment implements OnInit {
           serviceId: this.rescheduleData.serviceId,
           appointmentId: this.rescheduleData.appointmentId,
           appointmentDate: formatDate(this.rescheduleData.appointmentDate, 'yyyy-MM-dd', 'en-IN')
-          // appontmentDate: new Date(this.data.appointmentDate)
         });
 
         this.rescheduleForm.get('slotTime')?.valueChanges.subscribe((slot: SlotData) => {

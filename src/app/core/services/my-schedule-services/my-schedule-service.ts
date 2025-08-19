@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MyScheduleViewModel } from '../../models/my-schedule.interface';
 import { ResponseInterface } from '../../models/response.interface';
+import { Notification } from '../../models/notification.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class MyScheduleService {
   constructor(private http: HttpClient) {}
 
   getMySchedule(
-    searchData: string = '',
+    searchData: string | null = '',
     page: number = 1,
     pageSize: number = 5,
     sortBy: string = 'appointmentDate',
@@ -35,5 +36,17 @@ export class MyScheduleService {
 
   completeAppointment(appointmentId: number): Observable<ResponseInterface>{
     return this.http.post<ResponseInterface>(`${this.baseUrl}/complete/?appointmentId=${appointmentId}`, {});
+  }
+
+  notification(): Observable<Notification[]>{
+    return this.http.get<Notification[]>(`${this.baseUrl}/notifications`);
+  }
+
+  markAsRead(notificationId: number): Observable<boolean>{
+    return this.http.post<boolean>(`${this.baseUrl}/notifications/mark-read`, notificationId);
+  }
+
+  markAllAsRead(notificationIds: number[]): Observable<boolean> {
+    return this.http.post<boolean>(`${this.baseUrl}/notifications/mark-all-read`, notificationIds);
   }
 }

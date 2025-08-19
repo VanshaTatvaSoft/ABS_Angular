@@ -5,7 +5,11 @@
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">Cancel</button>
   <button mat-raised-button color="warn" [disabled]="isSaving" (click)="save()">
-    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
-    <span *ngIf="!isSaving">Save</span>
+    @if(isSaving){
+      <mat-spinner diameter="20"></mat-spinner>
+    }
+    @else {
+      <span>Save</span>
+    }
   </button>
 </mat-dialog-actions>

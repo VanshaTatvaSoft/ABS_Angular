@@ -81,15 +81,17 @@
     }
   }
 </mat-error> -->
-<mat-error *ngIf="formControl.invalid && (formControl.touched || formControl.dirty)">
-  @if (formControl.hasError('required')) {
-    {{ getErrorMessage('required') }}
-  } @else {
-    @for (error of getErrorKeys(); track $index) {
-      @if (error !== 'required') {
-        {{ getErrorMessage(error) }}<br />
+@if(formControl.invalid && (formControl.touched || formControl.dirty)){
+  <mat-error>
+    @if (formControl.hasError('required')) {
+      {{ getErrorMessage('required') }}
+    } @else {
+      @for (error of getErrorKeys(); track $index) {
+        @if (error !== 'required') {
+          {{ getErrorMessage(error) }}<br />
+        }
       }
     }
-  }
-</mat-error>
+  </mat-error>
+}
 

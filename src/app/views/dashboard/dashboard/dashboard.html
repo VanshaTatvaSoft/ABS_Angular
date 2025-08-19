@@ -13,6 +13,7 @@
                     label: 'Options',
                     type: 'select',
                     placeholder: '',
+                    value: '-1',
                     id: 'role',
                     name: 'role',
                     disabled: false,
@@ -33,7 +34,7 @@
           <!-- @* customer *@ -->
           <div class="col-lg-3 col-6">
               <app-dashboard-card
-                  [value]="dashboardData.customerCount"
+                  [value]="dashboardData?.customerCount"
                   [title]="'Customer'"
                   [icon]="'../../../../assets/images/customers.png'"
                   [color]="'primary'"
@@ -44,7 +45,7 @@
           <!-- @* provider *@ -->
           <div class="col-lg-3 col-6">
               <app-dashboard-card
-                  [value]="dashboardData.providerCount"
+                  [value]="dashboardData?.providerCount"
                   [title]="'Provider'"
                   [icon]="'../../../../assets/images/Providers.png'"
                   [color]="'success'"
@@ -55,7 +56,7 @@
           <!-- @* appointment *@ -->
           <div class="col-lg-3 col-6">
               <app-dashboard-card
-                  [value]="dashboardData.appointmentCount"
+                  [value]="dashboardData?.appointmentCount"
                   [title]="'Appointments'"
                   [icon]="'../../../assets/images/Appointments.png'"
                   [color]="'info'"
@@ -66,7 +67,7 @@
           <!-- @* services *@ -->
           <div class="col-lg-3 col-6">
               <app-dashboard-card
-                  [value]="dashboardData.serviceCount"
+                  [value]="dashboardData?.serviceCount"
                   [title]="'Services'"
                   [icon]="'../../../assets/images/Services.png'"
                   [color]="'danger'"
@@ -93,25 +94,25 @@
                           <div class="col-md-12">
                               <div class="progress-group mb-3">
                                   <span class="fs-5">Booked Appointment</span>
-                                  <span class="float-end"><b>{{this.dashboardData.bookedAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                  <span class="float-end"><b>{{this.dashboardData?.bookedAppointmentCount}}</b>/{{this.dashboardData?.appointmentCount}}</span>
                                   <div class="progress progress-sm">
-                                      <div class="progress-bar text-bg-warning" [style.width.%]="dashboardData.bookedPercentage"></div>
+                                      <div class="progress-bar text-bg-warning" [style.width.%]="dashboardData?.bookedPercentage"></div>
                                   </div>
                               </div>
                               <div class="progress-group mb-3">
                                   <span class="fs-5">Completed Appointment</span>
                                   <span
-                                      class="float-end"><b>{{this.dashboardData.completedAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                      class="float-end"><b>{{this.dashboardData?.completedAppointmentCount}}</b>/{{this.dashboardData?.appointmentCount}}</span>
                                   <div class="progress progress-sm">
-                                      <div class="progress-bar text-bg-success" [style.width.%]="dashboardData.completedPercentage">
+                                      <div class="progress-bar text-bg-success" [style.width.%]="dashboardData?.completedPercentage">
                                       </div>
                                   </div>
                               </div>
                               <div class="progress-group">
                                   <span class="fs-5">Canceld Appointment</span>
-                                  <span class="float-end"><b>{{this.dashboardData.cancledAppointmentCount}}</b>/{{this.dashboardData.appointmentCount}}</span>
+                                  <span class="float-end"><b>{{this.dashboardData?.cancledAppointmentCount}}</b>/{{this.dashboardData?.appointmentCount}}</span>
                                   <div class="progress progress-sm">
-                                      <div class="progress-bar text-bg-danger" [style.width.%]="dashboardData.cancledPercentage"></div>
+                                      <div class="progress-bar text-bg-danger" [style.width.%]="dashboardData?.cancledPercentage"></div>
                                   </div>
                               </div>
                           </div>
@@ -170,14 +171,16 @@
                               </thead>
                               <tbody>
                                 <!-- Check if there are no providers -->
-                                <tr *ngIf="dashboardData.providers.length === 0">
-                                  <td colspan="4">
-                                    <div class="d-flex justify-content-center align-items-center fw-bold">No Data Found</div>
-                                  </td>
-                                </tr>
+                                 @if(dashboardData?.providers.length === 0){
+                                   <tr>
+                                     <td colspan="4">
+                                       <div class="d-flex justify-content-center align-items-center fw-bold">No Data Found</div>
+                                     </td>
+                                   </tr>
+                                 }
 
                                 <!-- Loop through the providers -->
-                                <tr *ngFor="let u of dashboardData.providers; let index = index" class="align-middle">
+                                <tr *ngFor="let u of dashboardData?.providers; let index = index" class="align-middle">
                                   <td>{{ index + 1 }}.</td>
                                   <td>{{ u.name }}</td>
                                   <td>{{ u.email }}</td>
@@ -195,7 +198,7 @@
                           <div class="col-12">
                               <div class="small-box text-bg-warning">
                                   <div class="inner">
-                                      <h3>{{this.dashboardData.availableProviderCount}}</h3>
+                                      <h3>{{this.dashboardData?.availableProviderCount}}</h3>
                                       <p>Available Providers</p>
                                   </div>
                                   <a href="#"
@@ -208,7 +211,7 @@
                           <div class="col-12">
                               <div class="small-box text-bg-info">
                                   <div class="inner">
-                                      <h3>₹ {{this.dashboardData.totalRevenue}}</h3>
+                                      <h3>₹ {{this.dashboardData?.totalRevenue}}</h3>
                                       <p>Total Revenue</p>
                                   </div>
                                   <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
@@ -242,7 +245,7 @@
                                   <div class="col-md-12">
                                       <div class="p-1">
                                           <canvas class="w-100" id="servicePieChart" style="height: 200px !important;">
-
+                                            
                                           </canvas>
                                       </div>
                                   </div>

@@ -35,14 +35,20 @@
   }
 </ng-template>
 
-<app-generic-table
-    [data]="data?.myScheduleList"
-    [columns]="columns"
-    [totalCount]="totalCount"
-    [pageSize]="pageSize"
-    [pageNumber]="page"
-    [columnTemplates]="{ actions: actionBtns }"
-    [actionColumnName] ="'Complete'"
-    (pageChange)="onPageChange($event)"
-    (sortChange)="onSortChange($event)">
-</app-generic-table>
+<div class="card mx-4 mt-3">
+  <span id="MyBookingListContainer">
+    <div class="card-body p-0 mb-4" style="overflow-y: auto;">
+      <app-generic-table
+        [data]="data?.myScheduleList"
+        [columns]="columns"
+        [totalCount]="totalCount"
+        [pageSize]="pageSize"
+        [pageNumber]="page"
+        [columnTemplates]="{ actions: actionBtns }"
+        [actionColumnName] ="'Complete'"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)">
+      </app-generic-table>
+    </div>
+  </span>
+</div>

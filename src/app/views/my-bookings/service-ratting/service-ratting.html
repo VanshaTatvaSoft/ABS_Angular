@@ -22,7 +22,7 @@
           <div class="mb-3">
             <label class="mb-2">Rating</label>
             <div class="d-flex">
-              <ng-container *ngFor="let star of stars">
+              @for (star of stars; track star) {
                 <i
                   class="bi"
                   [ngClass]="{
@@ -32,7 +32,7 @@
                   (click)="setRating(star)"
                   style="cursor: pointer; font-size: 24px; margin-right: 5px;"
                 ></i>
-              </ng-container>
+              }
             </div>
           </div>
 

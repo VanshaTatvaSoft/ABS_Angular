@@ -1,17 +1,17 @@
-<h2 mat-dialog-title class="ms-3">Assign Service</h2>
+<h2 mat-dialog-title class="ms-3 mt-2">Assign Service</h2>
 
-<mat-dialog-content>
+<mat-dialog-content class="pt-0">
   <div mat-dialog-content class="p-3" *ngIf="assignModel">
 
     <div class="row">
       <div class="col-6">
-        <mat-form-field class="w-100">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Name</mat-label>
           <input matInput [value]="assignModel.providerName" disabled />
         </mat-form-field>
       </div>
       <div class="col-6">
-        <mat-form-field class="w-100">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Email</mat-label>
           <input matInput [value]="assignModel.providerEmail" disabled />
         </mat-form-field>
@@ -31,13 +31,15 @@
       </mat-select>
     </mat-form-field> -->
     <mat-label>Services</mat-label>
-    <div *ngFor="let service of assignModel.serviceList">
-      <mat-checkbox
-        [checked]="isChecked(service.serviceId)"
-        (change)="onCheckboxChange(service.serviceId, $event)">
-        {{ service.serviceName }} - {{service.serviceId}}
-      </mat-checkbox>
-    </div>
+    @for (service of assignModel.serviceList; track service.serviceId) {
+      <div>
+        <mat-checkbox
+          [checked]="isChecked(service.serviceId)"
+          (change)="onCheckboxChange(service.serviceId, $event)">
+          {{ service.serviceName }} - {{ service.serviceId }}
+        </mat-checkbox>
+      </div>
+    }
 
   </div>
 </mat-dialog-content>
@@ -45,7 +47,10 @@
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="close()">Cancel</button>
   <button mat-flat-button color="primary" type="submit" [disabled]="this.isSaving" (click)="submit()">
-    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
-    <span *ngIf="!isSaving">Save</span>
+    @if(isSaving){
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      <span>Save</span>
+    }
   </button>
 </mat-dialog-actions>

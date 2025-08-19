@@ -56,7 +56,7 @@ export class ProviderService {
 
     return this.http.post<ResponseInterface>(
       `${this.baseUrl}/assign?selectedServiceIds=${encodeURIComponent(selectedStr)}&deletedServiceIds=${encodeURIComponent(removedStr)}`,
-      providerId, // sent as raw number in body
+      providerId,
       {
         headers: { 'Content-Type': 'application/json' }
       }

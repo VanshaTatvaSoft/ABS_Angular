@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
@@ -54,6 +54,7 @@ export class BookAppointment {
     this.bookingService.getDataForBooking().subscribe({
       next: (res) => {
         this.data = res;
+
         this.bookingForm = this.fb.group({
           clientId: [this.data?.clientId??null],
           clientName: [this.data?.clientName??'', Validators.required],
@@ -114,6 +115,7 @@ export class BookAppointment {
             maxHeight: '90vh',
             disableClose: true,
             autoFocus: false,
+            panelClass: 'custom-dialog-class',
             data: {availableSlot: this.availableSlots, providerId: this.providerId, appointmentDate: appointmentDate, startTime: startTime, endTime: endTime, serviceId: serviceId}
           });
 

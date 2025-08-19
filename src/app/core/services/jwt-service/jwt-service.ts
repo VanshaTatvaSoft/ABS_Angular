@@ -31,12 +31,28 @@ export class JwtService {
     return decoded["role"] || null;
   }
 
+  getUserUserId(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    return decoded["userid"] || null;
+  }
+
   getUserName(): string | null {
     const token = this.getAccessToken();
     if (!token) return null;
 
     const decoded = jwtDecode<JwtPayload>(token);
     return decoded["username"] || null;
+  }
+
+  getUserId(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    return decoded["userid"] || null;
   }
 
 }

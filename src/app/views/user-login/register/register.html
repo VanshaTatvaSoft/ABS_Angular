@@ -17,6 +17,7 @@
           placeholder: 'Enter Name',
           id: 'name',
           name: 'name',
+          icon: 'person',
           customErrorMessages: {
             required: 'Name is required'
           }
@@ -39,6 +40,7 @@
           placeholder: 'Enter Email',
           id: 'email',
           name: 'email',
+          icon: 'email',
           customErrorMessages: {
             required: 'Email is required',
             email: 'Enter a valid email address'
@@ -101,10 +103,11 @@
           }
         }">
       </lib-generic-input>
-
-      <div class="text-danger" *ngIf="registerForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !registerForm.get('confirmPassword')?.errors?.['required']">
-        Password and Confirm Password must match
-      </div>
+      @if(registerForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !registerForm.get('confirmPassword')?.errors?.['required']){
+        <div class="text-danger">
+          Password and Confirm Password must match
+        </div>
+      }
     </div>
   </div>
 
@@ -123,18 +126,20 @@
           id: 'phoneNo',
           name: 'phoneNo',
           disabled: false,
+          icon: 'phone',
           customErrorMessages: {
             required: 'Phone No is required',
             invalidPhone: 'Enter a valid phone number',
             invalidLength: 'Phone number must be 10 digits long'
-          }
+          },
+          class: 'w-100'
         }">
       </lib-generic-input>
     </div>
 
     <div class="col-6">
       <!-- Role select list -->
-      <app-custom-input
+      <!-- <app-custom-input
       formControlName="role"
       [customInput]="{
         appearance: 'outline',
@@ -147,7 +152,25 @@
         options:roles
       }"
       [formControl]="roleControl">
-      </app-custom-input>
+      </app-custom-input> -->
+      <lib-generic-input
+        formControlName="role"
+        [formControl]="roleControl"
+        [config]="{
+          appearance: 'outline',
+          label: 'Role',
+          type: 'select',
+          placeholder: '',
+          id: 'role',
+          name: 'role',
+          disabled: false,
+          options:roles,
+          icon: 'settings',
+          value: '',
+          class: 'w-100'
+        }"
+      >
+      </lib-generic-input>
     </div>
   </div>
 

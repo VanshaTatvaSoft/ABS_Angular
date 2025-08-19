@@ -11,6 +11,7 @@ import { Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { AssignService } from '../provider/assign-service/assign-service';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
+import { TimeFormatService } from '../../core/services/time-format-service/time-format-service';
 
 @Component({
   selector: 'app-my-service',
@@ -38,7 +39,7 @@ export class MyService implements OnInit{
   searchData = '';
   providerId?: number;
 
-  constructor(private myServcieApi: MyServiceService, private dialog: MatDialog, private signalrService: SignalrService){ }
+  constructor(private myServcieApi: MyServiceService, private dialog: MatDialog, private signalrService: SignalrService, private timeFormatService: TimeFormatService){ }
 
   ngOnInit(): void {
     this.loadData();
@@ -62,7 +63,14 @@ export class MyService implements OnInit{
     this.myServcieApi.getMyServices(this.page, this.pageSize, this.sortBy, this.sortDirection, this.searchData).subscribe({
       next: (res) => {
         // console.log(res);
-        this.data = res
+        this.data = {
+          providerId: res.providerId,
+          servicePagination: res.servicePagination,
+          myServices: res.myServices.map(service => ({
+            ...service,
+            duration: `${this.timeFormatService.transform(service.duration, 'min')} mins`
+          }))
+        }
         this.totalCount = res.servicePagination.totalRecord;
         this.providerId = res.providerId;
       }

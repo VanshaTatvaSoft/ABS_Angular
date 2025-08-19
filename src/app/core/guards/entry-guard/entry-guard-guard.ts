@@ -20,6 +20,7 @@ export const entryGuardGuard: CanActivateFn = (route, state) => {
           // console.log("Entry Res - ",res);
           authService.setUserRole(jwtService.getUserRole()?? '');
           authService.setUserName(jwtService.getUserName()?? '');
+          authService.setUserImage(res.profileImg);
           router.navigate([`/${res.redirectTo}`]);
           return of(false);
         } else {

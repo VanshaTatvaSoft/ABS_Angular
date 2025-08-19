@@ -63,9 +63,11 @@
                   tooShort: 'Must be at least 8 characters long'
                 }">
               </app-custom-input>
-              <div class="text-danger" *ngIf="firstLoginForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !firstLoginForm.get('confirmPassword')?.errors?.['required']">
-                Password and Confirm Password must match
-              </div>
+              @if(firstLoginForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !firstLoginForm.get('confirmPassword')?.errors?.['required']){
+                <div class="text-danger">
+                  Password and Confirm Password must match
+                </div>
+              }
             </div>
           </div>
       </div>

@@ -18,6 +18,11 @@ export const authGuard: CanActivateFn = (route, state) => {
 
       authService.setUserRole(jwtService.getUserRole()?? '');
       authService.setUserName(jwtService.getUserName()?? '');
+      authService.getUserProfileImg().subscribe({
+        next: (res) => {
+          authService.setUserImage(res.profileImg);
+        }
+      });
 
       // If access token is valid
       if (response.success) {
@@ -31,6 +36,7 @@ export const authGuard: CanActivateFn = (route, state) => {
             if (res.success) {
               authService.setUserRole(jwtService.getUserRole()?? '');
               authService.setUserName(jwtService.getUserName()?? '');
+              authService.setUserImage(res.profileImg);
               return true; // Tokens refreshed successfully
             } else {
               router.navigate(['/login']);

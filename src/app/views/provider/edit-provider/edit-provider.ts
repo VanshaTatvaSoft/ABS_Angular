@@ -14,6 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeFormatService } from '../../../core/services/time-format-service/time-format-service';
 import { TimeFormatterPipe } from 'ngx-material-timepicker/src/app/material-timepicker/pipes/time-formatter.pipe';
+import { TimeRangeValidator } from '../../../shared/validators/start-end-time.validator';
 
 @Component({
   selector: 'app-edit-provider',
@@ -40,7 +41,8 @@ export class EditProvider implements OnInit{
     // console.log('Calling with Provider ID:', this.providerId);
     this.providerService.getEditProvider(this.providerId).subscribe(res => {
       this.editModel = res;
-      // console.log("Edit Model - ",this.editModel);
+      // console.log('res - ',res);
+      console.log("Edit Model - ",this.editModel);
       this.editForm = this.fb.group({
         providerId: [res.providerId],
         email: [{ value: res.email, disabled: true }],
@@ -52,6 +54,9 @@ export class EditProvider implements OnInit{
         startTime: [this.timeFormatService.transform(res.startTime, 'short'), [Validators.required]],
         endTime: [this.timeFormatService.transform(res.endTime, 'short'), [Validators.required]],
         days: [res.days ?? []]
+      },
+      {
+        validators: [TimeRangeValidator(this.timeFormatService, [])]
       });
     });
   }

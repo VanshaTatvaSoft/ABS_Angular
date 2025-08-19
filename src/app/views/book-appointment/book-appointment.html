@@ -17,19 +17,24 @@
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Name</mat-label>
                 <input matInput formControlName="clientName" />
-                <mat-error *ngIf="bookingForm.get('clientName')?.hasError('required') && (bookingForm.get('clientName')?.touched || bookingForm.get('clientName')?.dirty)">
-                  Name is required.
-                </mat-error>
+                @if(bookingForm.get('clientName')?.hasError('required') && (bookingForm.get('clientName')?.touched || bookingForm.get('clientName')?.dirty)){
+                  <mat-error>Name is required.</mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
               <mat-form-field appearance="outline" class="w-100">
                 <mat-label>Phone No</mat-label>
                 <input matInput formControlName="clientPhoneNo" />
-                <mat-error *ngIf="bookingForm.get('clientPhoneNo')?.touched || bookingForm.get('clientPhoneNo')?.dirty">
-                  <span *ngIf="bookingForm.get('clientPhoneNo')?.hasError('required')">Phone number is required</span>
-                  <span *ngIf="bookingForm.get('clientPhoneNo')?.hasError('invalidPhone')">Enter valid phone number</span>
-                </mat-error>
+                @if(bookingForm.get('clientPhoneNo')?.touched || bookingForm.get('clientPhoneNo')?.dirty){
+                  <mat-error>
+                    @if(bookingForm.get('clientPhoneNo')?.hasError('required')){
+                      <span>Phone number is required</span>
+                    } @else if(bookingForm.get('clientPhoneNo')?.hasError('invalidPhone')) {
+                      <span>Enter valid phone number</span>
+                    }
+                  </mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-lg-4 col-md-12 col-sm-12">
@@ -39,9 +44,13 @@
                 <mat-hint>MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker" ></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="bookingForm.get('appointmentDate')?.touched || bookingForm.get('appointmentDate')?.dirty">
-                  <span *ngIf="bookingForm.get('appointmentDate')?.hasError('required')">Appointment date is required</span>
-                </mat-error>
+                @if(bookingForm.get('appointmentDate')?.touched || bookingForm.get('appointmentDate')?.dirty){
+                  <mat-error>
+                    @if(bookingForm.get('appointmentDate')?.hasError('required')){
+                      <span>Appointment date is required</span>
+                    }
+                  </mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -53,9 +62,13 @@
                 <ngx-material-timepicker
                   #startTimePicker
                 ></ngx-material-timepicker>
-                <mat-error *ngIf="bookingForm.get('startTime')?.touched || bookingForm.get('startTime')?.dirty">
-                  <span *ngIf="bookingForm.get('startTime')?.hasError('required')">Appointment start time is required</span>
-                </mat-error>
+                @if(bookingForm.get('startTime')?.touched || bookingForm.get('startTime')?.dirty){
+                  <mat-error>
+                    @if(bookingForm.get('startTime')?.hasError('required')){
+                      <span>Appointment start time is required</span>
+                    }
+                  </mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-lg-2">
@@ -63,9 +76,13 @@
                 <mat-label>Set End Time</mat-label>
                 <input matInput [ngxTimepicker]="endTimePicker" formControlName="endTime" readonly />
                 <ngx-material-timepicker #endTimePicker></ngx-material-timepicker>
-                <mat-error *ngIf="bookingForm.get('endTime')?.touched || bookingForm.get('endTime')?.dirty">
-                  <span *ngIf="bookingForm.get('endTime')?.hasError('required')">Appointment end time is required</span>
-                </mat-error>
+                @if(bookingForm.get('endTime')?.touched || bookingForm.get('endTime')?.dirty){
+                  <mat-error>
+                    @if(bookingForm.get('endTime')?.hasError('required')){
+                      <span>Appointment end time is required</span>
+                    }
+                  </mat-error>
+                }
               </mat-form-field>
             </div>
             <div class="col-lg-4">
@@ -83,9 +100,13 @@
                   </mat-option>
                   }
                 </mat-select>
-                <mat-error *ngIf="bookingForm.get('serviceId')?.touched || bookingForm.get('serviceId')?.dirty">
-                  <span *ngIf="bookingForm.get('serviceId')?.hasError('required')">Select service</span>
-                </mat-error>
+                @if(bookingForm.get('serviceId')?.touched || bookingForm.get('serviceId')?.dirty){
+                  <mat-error>
+                    @if(bookingForm.get('serviceId')?.hasError('required')){
+                      <span>Select service</span>
+                    }
+                  </mat-error>
+                }
               </mat-form-field>
             </div>
             <!-- <div class="col-lg-2 col-md-2">
@@ -97,15 +118,19 @@
               </button>
             </div> -->
             <div class="col-lg-2 col-md-2">
-              <mat-error *ngIf="bookingForm.errors?.['timeSame']">
-                Start time and end time cannot be the same
-              </mat-error>
-              <mat-error *ngIf="bookingForm.errors?.['startAfterEnd']">
-                Start time must be before end time
-              </mat-error>
-              <mat-error *ngIf="bookingForm.hasError('insufficientDuration')">
-                Start time and end time should add up to the service duration
-              </mat-error>
+              @if(bookingForm.errors?.['timeSame']){
+                <mat-error>
+                  Start time and end time cannot be the same
+                </mat-error>
+              } @else if (bookingForm.errors?.['startAfterEnd']) {
+                <mat-error>
+                  Start time must be before end time
+                </mat-error>
+              } @else if (bookingForm.hasError('insufficientDuration')) {
+                <mat-error>
+                  Start time and end time should add up to the service duration
+                </mat-error>
+              }
             </div>
           </div>
           <div class="row" style="overflow-y: auto">

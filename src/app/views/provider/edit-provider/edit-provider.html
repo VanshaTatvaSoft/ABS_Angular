@@ -1,17 +1,17 @@
 <h2 mat-dialog-title class="ps-3 pt-2">Edit Provider</h2>
 <mat-dialog-content *ngIf="editForm">
   <form [formGroup]="editForm">
-    <mat-form-field appearance="outline" class="w-100 mb-3">
+    <mat-form-field appearance="outline" class="w-100">
       <mat-label>Email address</mat-label>
       <input matInput formControlName="email"/>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100 mb-3">
+    <mat-form-field appearance="outline" class="w-100">
       <mat-label>Name</mat-label>
       <input matInput formControlName="name" />
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-100 mb-3">
+    <mat-form-field appearance="outline" class="w-100">
       <mat-label>Phoneno</mat-label>
       <input matInput type="text" formControlName="phoneNo" />
     </mat-form-field>
@@ -21,7 +21,7 @@
       <mat-slide-toggle formControlName="isAvailable">Is Available</mat-slide-toggle>
     </div>
 
-    <div class="d-flex gap-2 mt-2 mb-3">
+    <div class="d-flex gap-2 mt-2">
       <mat-form-field appearance="outline">
         <mat-label>Set Start Time</mat-label>
         <input matInput [ngxTimepicker]="startTimePicker" formControlName="startTime" readonly>
@@ -35,13 +35,27 @@
       </mat-form-field>
     </div>
 
+    <div>
+      @if(editForm.errors?.['timeSame']){
+        <mat-error>
+          Start time and end time cannot be the same
+        </mat-error>
+      } @else if (editForm.errors?.['startAfterEnd']) {
+        <mat-error>
+          Start time must be before end time
+        </mat-error>
+      }
+    </div>
+
     @if(editForm.get('isRecurring')?.value){
       <div class="mb-3 d-flex flex-wrap gap-2">
-        <mat-checkbox *ngFor="let day of daysOfWeek"
-          [checked]="editForm.value.days.includes(day)"
-          (change)="toggleDay(day)">
-          {{ day }}
-        </mat-checkbox>
+        @for (day of daysOfWeek; track day) {
+          <mat-checkbox
+            [checked]="editForm.value.days.includes(day)"
+            (change)="toggleDay(day)">
+            {{ day }}
+          </mat-checkbox>
+        }
       </div>
     }
 
@@ -51,7 +65,10 @@
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">Cancel</button>
   <button mat-flat-button color="primary" (click)="submit()" [disabled]="editForm?.invalid || this.isSaving">
-    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
-    <span *ngIf="!isSaving">Submit</span>
+    @if(isSaving){
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else{
+      <span>Submit</span>
+    }
   </button>
 </mat-dialog-actions>

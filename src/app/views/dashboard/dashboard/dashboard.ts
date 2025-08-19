@@ -42,7 +42,6 @@ export class Dashboard implements OnInit {
       // console.log('Selected Option:', value);
       this.loadDashboardData(value);
     });
-
   }
 
   valuechange(newOption: string): void {
@@ -75,7 +74,7 @@ export class Dashboard implements OnInit {
     const data = revenues.map(r => r.revenue);
 
     if (this.revenueChart) {
-      this.revenueChart.destroy(); // clear existing chart
+      this.revenueChart.destroy();
     }
 
     const ctx = document.getElementById('revenueChart') as HTMLCanvasElement;
@@ -133,7 +132,8 @@ export class Dashboard implements OnInit {
           label: 'Services',
           data: data,
           backgroundColor: [
-            '#007bff', '#28a745', '#ffc107', '#dc3545', '#6610f2', '#17a2b8'
+            '#007bff', '#28a745', '#ffc107', '#dc3545', '#6610f2', '#17a2b8',
+            '#008bff', '#28a743', '#fcc107', '#dd3545', '#6610f1', '#18a2b8'
           ],
           borderWidth: 1
         }]

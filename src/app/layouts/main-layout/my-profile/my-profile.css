@@ -1,0 +1,40 @@
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-image-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.image-preview img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placeholder mat-icon {
+  font-size: 48px;
+  color: #9e9e9e;
+}
+
+::ng-deep ngx-material-timepicker-container,
+::ng-deep .timepicker-overlay {
+  z-index: 9999 !important;
+  position: fixed !important;
+}

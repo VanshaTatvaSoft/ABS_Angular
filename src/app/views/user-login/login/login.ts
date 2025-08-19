@@ -103,6 +103,7 @@ export class Login {
       next: (res) => {
         this.toastService.showSuccess(res.message || 'Login successful');
         this.authService.setUserRole(res.role ?? '');
+        this.authService.setUserImage(res.profileImg);
         this.authService.setUserName(this.jwtService.getUserName() ?? '');
         if (res.isFirst) {
           this.router.navigate(['/first-login'], {

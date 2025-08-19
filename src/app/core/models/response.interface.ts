@@ -6,5 +6,6 @@ export interface ResponseInterface{
   userName: string | null,
   userId: number | null,
   isFirst: boolean | null,
-  redirectTo: string | null
+  redirectTo: string | null,
+  profileImg: string | null
 }

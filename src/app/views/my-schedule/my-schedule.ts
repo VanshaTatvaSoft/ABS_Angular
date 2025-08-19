@@ -14,6 +14,7 @@ import { SweetToastService } from '../../core/services/toast/sweet-toast.service
 import Swal from 'sweetalert2';
 import { LoaderService } from '../../core/services/loader-service/loader-service';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-my-schedule',
@@ -32,7 +33,7 @@ export class MySchedule implements OnInit {
   pageSize = 5;
   sortBy = 'appointmentDate';
   sortDirection = 'asc';
-  searchData = '';
+  searchData: string | null = '';
   filter = 'booked';
 
   columns = [
@@ -61,6 +62,16 @@ export class MySchedule implements OnInit {
       this.loadData();
     }
     this.loadData();
+
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe((value: string | null) => {
+        this.searchData = value;
+        this.loadData();
+      });
   }
 
   loadData(){

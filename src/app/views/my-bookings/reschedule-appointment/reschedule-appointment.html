@@ -6,11 +6,11 @@
       <input type="date" class="form-control" id="RescheduleAppointmentDate" placeholder="" [min]="minDate" formControlName="appointmentDate">
       <label for="RescheduleAppointmentDate">Date</label>
       <div>
-        <span
-          class="text-danger"
-          *ngIf="rescheduleForm.get('appointmentDate')?.hasError('required')">
-          Appointment date is required
-        </span>
+        @if(rescheduleForm.get('appointmentDate')?.hasError('required')){
+          <span class="text-danger">
+            Appointment date is required
+          </span>
+        }
       </div>
     </div>
 
@@ -27,15 +27,17 @@
 
     <div class="list-group" style="max-height: 200px; overflow-y: auto;">
       @if(this.rescheduleData?.slotsAvailable){
-        <label class="list-group-item list-group-item-action d-flex align-items-center gap-2 fs-4" *ngFor="let s of rescheduleData.slotsAvailable">
-          <input
-            class="form-check-input me-2 SlotRadioBtn"
-            type="radio"
-            formControlName="slotTime"
-            [value]="s"
-          />
-          {{ s.startTime | timeFormatPipe: '12hr' }} - {{ s.endTime | timeFormatPipe: '12hr' }}
-        </label>
+        @for (s of rescheduleData.slotsAvailable; track s.startTime) {
+          <label class="list-group-item list-group-item-action d-flex align-items-center gap-2 fs-4">
+            <input
+              class="form-check-input me-2 SlotRadioBtn"
+              type="radio"
+              formControlName="slotTime"
+              [value]="s"
+            />
+            {{ s.startTime | timeFormatPipe: '12hr' }} - {{ s.endTime | timeFormatPipe: '12hr' }}
+          </label>
+        }
       }
       @else {
         <div class="alert alert-warning text-center fw-semibold">

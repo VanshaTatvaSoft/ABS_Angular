@@ -1,0 +1,84 @@
+import { Component, Inject } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
+import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
+import { LoaderService } from '../../../core/services/loader-service/loader-service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { JwtService } from '../../../core/services/jwt-service/jwt-service';
+import { PasswordStrengthValidator } from '../../../shared/validators/password-strength.validator';
+import { MatInputModule } from '@angular/material/input';
+import { GenericInput } from '@vanshasomani/generic-input';
+
+@Component({
+  selector: 'app-change-password',
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogContent, MatFormFieldModule, MatDialogActions, MatButtonModule, MatInputModule, GenericInput],
+  templateUrl: './change-password.html',
+  styleUrl: './change-password.css'
+})
+export class ChangePassword {
+  changePasswordForm!: FormGroup;
+
+  constructor(
+    private dialogRef: MatDialogRef<ChangePassword>,
+    @Inject(MAT_DIALOG_DATA) public data: {},
+    private fb: FormBuilder,
+    private toastService: SweetToastService,
+    private authService: AuthService,
+    private jwtService: JwtService
+  ) {
+    this.changePasswordForm = this.fb.group({
+      userId: [this.jwtService.getUserId(), Validators.required],
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, PasswordStrengthValidator]],
+      confirmPassword: ['', [Validators.required, PasswordStrengthValidator]]
+    },
+    { validators: this.passwordsMatchValidator }
+    )
+  }
+
+  passwordsMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get('newPassword')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordsMismatch: true };
+  };
+
+  get confirmPasswordControl(): FormControl {
+    return this.changePasswordForm.get('confirmPassword') as FormControl;
+  }
+  get newPasswordControl(): FormControl {
+    return this.changePasswordForm.get('newPassword') as FormControl;
+  }
+  get currentPasswordControl(): FormControl {
+    return this.changePasswordForm.get('currentPassword') as FormControl;
+  }
+
+  close(): void {
+    this.dialogRef.close(false);
+  }
+
+  submit(): void{
+    console.log(this.changePasswordForm.value);
+    if(this.changePasswordForm.invalid) return;
+
+    this.authService.changePasswordPost(this.changePasswordForm.value).subscribe({
+      next: (res) => {
+        if(res.success){
+          this.toastService.showSuccess(res.message || 'Password changed successfully');
+          this.dialogRef.close(true);
+        }
+        else{
+          this.toastService.showError(res.message || 'Error changing password');
+        }
+      },
+      error: (res) => {
+        this.toastService.showError('Something went wrong');
+        this.dialogRef.close(true);
+      }
+    });
+  }
+
+}

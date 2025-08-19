@@ -1,0 +1,3 @@
+::ng-deep .cdk-overlay-container {
+  z-index: 1050 !important; /* Bootstrap modal z-index is around 1040-1050 */
+}

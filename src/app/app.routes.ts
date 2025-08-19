@@ -19,6 +19,7 @@ import { MySchedule } from './views/my-schedule/my-schedule';
 import { MyBookings } from './views/my-bookings/my-bookings';
 import { BookAppointment } from './views/book-appointment/book-appointment';
 import { ServiceRatting } from './views/my-bookings/service-ratting/service-ratting';
+import { TodayBreak } from './views/today-break/today-break';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -94,6 +95,11 @@ export const routes: Routes = [
         component: ServiceRatting,
         canActivate: [authGuard],
       },
+      {
+        path: 'toadys-break',
+        component: TodayBreak,
+        canActivate: [authGuard],
+      }
     ],
   },
   { path: 'forbidden', component: Forbidden },

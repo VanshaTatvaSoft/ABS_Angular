@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MyBookingViewModel } from '../../core/models/my-booking.interface';
 import { MyBookingService } from '../../core/services/my-booking-service/my-booking-service';
 import { CommonModule, formatDate } from '@angular/common';
@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { RescheduleAppointment } from './reschedule-appointment/reschedule-appointment';
 import { MatDialog } from '@angular/material/dialog';
 import { LoaderService } from '../../core/services/loader-service/loader-service';
+import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 
 @Component({
   selector: 'app-my-bookings',
@@ -18,7 +19,7 @@ import { LoaderService } from '../../core/services/loader-service/loader-service
   templateUrl: './my-bookings.html',
   styleUrl: './my-bookings.css',
 })
-export class MyBookings {
+export class MyBookings implements OnInit {
   data!: MyBookingViewModel;
 
   columns = [
@@ -32,8 +33,15 @@ export class MyBookings {
     { key: 'endTime', header: 'End Time', sortable: false },
   ];
 
-  constructor(private myBookingService: MyBookingService, private timeFormatService: TimeFormatService, private toastService: SweetToastService, private dialog: MatDialog) {
+  constructor(private myBookingService: MyBookingService, private timeFormatService: TimeFormatService, private toastService: SweetToastService, private dialog: MatDialog, private signalrService: SignalrService) {
     this.loadData();
+  }
+
+  ngOnInit(): void {
+    this.signalrService.startConnection();
+    this.signalrService.appointmentCompleted = (msg) => {
+      this.loadData();
+    }
   }
 
   loadData(){
@@ -69,8 +77,11 @@ export class MyBookings {
       if(result.isConfirmed){
         this.myBookingService.cancelAppointment(appointmentId).subscribe({
           next: (res) => {
-            if(res.success) this.toastService.showSuccess(res.message || 'Appointment cancel successfully');
-            else this.toastService.showError(res.message || 'Error placing appointment');
+            if(res.success){
+              this.toastService.showSuccess(res.message || 'Appointment cancel successfully');
+            } else {
+              this.toastService.showError(res.message || 'Error placing appointment');
+            }
             this.loadData();
           },
           error: (err) => {

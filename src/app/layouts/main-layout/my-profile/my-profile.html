@@ -1,9 +1,10 @@
 <h1 mat-dialog-title class="ps-3 pt-2">My Profile</h1>
 
-<form [formGroup]="myProfileForm" (ngSubmit)="submit()">
+<form [formGroup]="myProfileForm" (ngSubmit)="submit()" class="profile-form">
   <mat-dialog-content>
 
-    <mat-form-field appearance="outline" class="w-100 md-2">
+    <!-- Name Field -->
+    <mat-form-field appearance="outline" class="w-100">
       <mat-label>Name</mat-label>
       <input matInput formControlName="name" />
       <mat-error *ngIf="myProfileForm.get('name')?.hasError('required') && (myProfileForm.get('name')?.touched || myProfileForm.get('name')?.dirty)">
@@ -11,6 +12,7 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- Phone Field -->
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Phone No</mat-label>
       <input matInput formControlName="phoneNo" />
@@ -20,16 +22,63 @@
       </mat-error>
     </mat-form-field>
 
-    @if(myProfileForm.get('isProvider')?.value){
-      <p><mat-slide-toggle formControlName="isAvailable">Available</mat-slide-toggle></p>
-    }
+    <!-- Profile Image Upload -->
+    <div class="profile-image-section">
+      <div class="image-preview">
+        <img *ngIf="previewImage; else placeholder" [src]="previewImage" alt="Profile" />
+        <ng-template #placeholder>
+          <div class="placeholder">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+        </ng-template>
+      </div>
+
+      <button mat-raised-button color="primary" type="button" (click)="fileInput.click()">
+        <mat-icon>upload</mat-icon> Upload Image
+      </button>
+      <input #fileInput type="file" hidden accept="image/*" (change)="onFileSelected($event)">
+    </div>
+    <div class="error-message text-danger" *ngIf="fileError">
+      {{ fileError }}
+    </div>
+
+    <!-- Provider Availability -->
+    <div *ngIf="myProfileForm.get('isProvider')?.value" class="mt-2">
+      <mat-slide-toggle formControlName="isAvailable" class="mb-2">Available</mat-slide-toggle>
+
+      <div class="d-flex gap-2 mt-2" *ngIf="myProfileForm.get('isAvailable')?.value">
+        <mat-form-field appearance="outline">
+          <mat-label>Set Start Time</mat-label>
+          <input matInput [ngxTimepicker]="startTimePicker" formControlName="startTime" readonly>
+          <ngx-material-timepicker #startTimePicker></ngx-material-timepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Set End Time</mat-label>
+          <input matInput [ngxTimepicker]="endTimePicker" formControlName="endTime" readonly>
+          <ngx-material-timepicker #endTimePicker></ngx-material-timepicker>
+        </mat-form-field>
+      </div>
+
+      <div>
+        @if(myProfileForm.errors?.['timeSame']){
+          <mat-error>
+            Start time and end time cannot be the same
+          </mat-error>
+        } @else if (myProfileForm.errors?.['startAfterEnd']) {
+          <mat-error>
+            Start time must be before end time
+          </mat-error>
+        }
+      </div>
+
+    </div>
 
   </mat-dialog-content>
 
+  <!-- Actions -->
   <mat-dialog-actions align="end">
     <button type="button" mat-button (click)="close()">Cancel</button>
-    <button type="submit" mat-flat-button color="primary">
-      <span>Submit</span>
-    </button>
+    <button type="submit" mat-flat-button color="primary" [disabled]="myProfileForm.invalid">Submit</button>
   </mat-dialog-actions>
 </form>

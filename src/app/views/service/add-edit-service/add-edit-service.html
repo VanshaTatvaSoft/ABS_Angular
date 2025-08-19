@@ -6,82 +6,97 @@
   <mat-dialog-content>
     <input type="hidden" formControlName="serviceId">
 
-    <!-- <lib-generic-input
-            [config]="{
-              appearance: 'outline',
-              class: 'w-100 mb-3',
-              label: 'Service Name',
-              type: 'text',
-              placeholder: 'Enter service name',
-              id: 'serviceName',
-              name: 'serviceName',
-              disabled: false,
-              customErrorMessages: {
-                required: 'Service name is required'
-              }
-            }"
-            [formControl]="serviceNameControll"
-            >
-            </lib-generic-input> -->
-
-    <mat-form-field class="w-100 mb-3" appearance="outline">
+    <lib-generic-input
+      [config]="{
+        appearance: 'outline',
+        class: 'w-100 mb-3',
+        label: 'Service Name',
+        type: 'text',
+        placeholder: 'Enter service name',
+        id: 'serviceName',
+        name: 'serviceName',
+        disabled: false,
+        customErrorMessages: {
+          required: 'Service name is required'
+        }
+      }"
+      [formControl]="serviceNameControll"
+    >
+    </lib-generic-input>
+    <!-- <mat-form-field class="w-100 mb-3" appearance="outline">
       <mat-label>Service Name</mat-label>
       <input matInput formControlName="serviceName">
-    </mat-form-field>
+    </mat-form-field> -->
 
-    <!-- <lib-generic-input
-            [config]="{
-              appearance: 'outline',
-              class: 'w-100 mb-3',
-              label: 'Service Description',
-              type: 'textarea',
-              placeholder: '',
-              id: 'serviceDesc',
-              name: 'serviceDesc',
-              disabled: false,
-              customErrorMessages: {
-                required: 'Service description is required'
-              }
-            }"
-            [formControl]="serviceDescControll"
-            >
-            </lib-generic-input> -->
-
-    <mat-form-field class="w-100 mb-3" appearance="outline">
+    <lib-generic-input
+      [config]="{
+        appearance: 'outline',
+        class: 'w-100 mb-3',
+        label: 'Service Description',
+        type: 'textarea',
+        placeholder: '',
+        id: 'serviceDesc',
+        name: 'serviceDesc',
+        disabled: false,
+        customErrorMessages: {
+          required: 'Service description is required'
+        }
+      }"
+      [formControl]="serviceDescControll"
+    >
+    </lib-generic-input>
+    <!-- <mat-form-field class="w-100 mb-3" appearance="outline">
       <mat-label>Description</mat-label>
       <textarea matInput formControlName="serviceDesc"></textarea>
-    </mat-form-field>
+    </mat-form-field> -->
 
     <div class="row">
       <div class="col-6">
-        <!-- <lib-generic-input
-                [config]="{
-                  appearance: 'outline',
-                  class: 'w-100 mb-3',
-                  label: 'Price',
-                  type: 'number',
-                  placeholder: 'Enter Price',
-                  id: 'servicePrice',
-                  name: 'servicePrice',
-                  disabled: false,
-                  customErrorMessages: {
-                    required: 'Service price is required',
-                    min: 'Price must be greater then 1',
-                  }
-                }"
-                [formControl]="priceControll"
-                >
-                </lib-generic-input> -->
-        <mat-form-field class="w-100 mb-3" appearance="outline">
+        <lib-generic-input
+          [config]="{
+            appearance: 'outline',
+            class: 'w-100 mb-3',
+            label: 'Price',
+            type: 'number',
+            placeholder: 'Enter Price',
+            id: 'servicePrice',
+            name: 'servicePrice',
+            disabled: false,
+            customErrorMessages: {
+              required: 'Service price is required',
+              min: 'Price must be greater then 1',
+            }
+          }"
+          [formControl]="priceControll"
+        >
+        </lib-generic-input>
+        <!-- <mat-form-field class="w-100 mb-3" appearance="outline">
           <mat-label>Price</mat-label>
           <input matInput type="number" formControlName="price">
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
       <div class="col-6">
-        <mat-form-field class="w-100 mb-3" appearance="outline">
+        <lib-generic-input
+          [config]="{
+            appearance: 'outline',
+            class: 'w-100 mb-3',
+            label: 'Duration',
+            type: 'time',
+            placeholder: 'Enter Duration',
+            id: 'serviceDuration',
+            name: 'serviceDuration',
+            disabled: false,
+            customErrorMessages: {
+              required: 'Service duration is required'
+            }
+          }"
+          [formControl]="durationControll"
+        >
+        </lib-generic-input>
+        <!-- <mat-form-field class="w-100 mb-3" appearance="outline">
           <mat-label>Duration</mat-label>
           <input matInput type="time" formControlName="duration">
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
     </div>
   </mat-dialog-content>
@@ -89,8 +104,12 @@
   <mat-dialog-actions align="end">
     <button mat-button type="button" (click)="cancel()">Cancel</button>
     <button mat-flat-button color="primary" type="submit" [disabled]="serviceForm.invalid || this.isSaving">
-      <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
-      <span *ngIf="!isSaving">Save</span>
+      @if(isSaving){
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      @else{
+        <span>Save</span>
+      }
     </button>
   </mat-dialog-actions>
 </form>

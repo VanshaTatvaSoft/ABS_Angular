@@ -1,33 +1,42 @@
-<h2 mat-dialog-title class="ms-3">
-  Add Provider
-</h2>
-
+<h2 mat-dialog-title class="ms-3 pb-0">Add Provider</h2>
 <form [formGroup]="addProviderForm" (ngSubmit)="submit()">
   <mat-dialog-content>
-    <mat-form-field class="w-100 mb-3" appearance="outline">
+    <mat-form-field class="w-100" appearance="outline">
       <mat-label>Provider Name</mat-label>
       <input matInput type="text" formControlName="providerName">
-      <mat-error *ngIf="addProviderForm.get('providerName')?.hasError('required') && (addProviderForm.get('providerName')?.touched || addProviderForm.get('providerName')?.dirty)">
-        Provider Name is required
-      </mat-error>
+      @if(addProviderForm.get('providerName')?.hasError('required') && (addProviderForm.get('providerName')?.touched || addProviderForm.get('providerName')?.dirty)){
+        <mat-error>
+          Provider Name is required
+        </mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field class="w-100 mb-3" appearance="outline">
+    <mat-form-field class="w-100" appearance="outline">
       <mat-label>Provider Email</mat-label>
       <input matInput type="email" formControlName="providerEmail">
-      <mat-error *ngIf="(addProviderForm.get('providerEmail')?.touched || addProviderForm.get('providerEmail')?.dirty)">
-        <span *ngIf="addProviderForm.get('providerEmail')?.hasError('required')">Email is required</span>
-        <span *ngIf="addProviderForm.get('providerEmail')?.hasError('email')">Enter a valid email</span>
-      </mat-error>
+      @if((addProviderForm.get('providerEmail')?.touched || addProviderForm.get('providerEmail')?.dirty)){
+        <mat-error>
+          @if(addProviderForm.get('providerEmail')?.hasError('required')){
+            <span>Email is required</span>
+          } @else if (addProviderForm.get('providerEmail')?.hasError('email')) {
+            <span>Enter a valid email</span>
+          }
+        </mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field class="w-100 mb-3" appearance="outline">
+    <mat-form-field class="w-100" appearance="outline">
       <mat-label>Provider Phone No</mat-label>
       <input matInput formControlName="phoneNo">
-      <mat-error *ngIf="addProviderForm.get('phoneNo')?.touched || addProviderForm.get('phoneNo')?.dirty">
-        <span *ngIf="addProviderForm.get('phoneNo')?.hasError('required')">Phone number is required</span>
-        <span *ngIf="addProviderForm.get('phoneNo')?.hasError('invalidPhone')">Enter a valid phone number</span>
-      </mat-error>
+      @if(addProviderForm.get('phoneNo')?.touched || addProviderForm.get('phoneNo')?.dirty){
+        <mat-error>
+          @if(addProviderForm.get('phoneNo')?.hasError('required')){
+            <span>Phone number is required</span>
+          } @else if (addProviderForm.get('phoneNo')?.hasError('invalidPhone')) {
+            <span>Enter a valid phone number</span>
+          }
+        </mat-error>
+      }
     </mat-form-field>
 
   </mat-dialog-content>
@@ -35,8 +44,11 @@
   <mat-dialog-actions align="end">
     <button mat-button type="button" (click)="cancel()">Cancel</button>
     <button mat-flat-button color="primary" type="submit" [disabled]="addProviderForm.invalid || this.isSaving">
-      <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
-      <span *ngIf="!isSaving">Save</span>
+      @if(isSaving){
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <span>Save</span>
+      }
     </button>
   </mat-dialog-actions>
 </form>

@@ -46,4 +46,33 @@ export class TimeFormatService {
         return value;
     }
   }
+
+  parseToDate(value: string): Date | null {
+    if (!value) return null;
+
+    let h = 0, m = 0;
+
+    // Case 1: "HH:mm:ss" or "HH:mm"
+    if (value.includes(':') && !value.includes('AM') && !value.includes('PM')) {
+      const parts = value.split(':').map(Number);
+      h = parts[0];
+      m = parts[1] ?? 0;
+    }
+
+    // Case 2: "HH:mm AM/PM"
+    else if (value.includes('AM') || value.includes('PM')) {
+      const [hourPart, modifier] = value.split(' ');
+      let [hh, mm] = hourPart.split(':').map(Number);
+      if (modifier === 'PM' && hh < 12) hh += 12;
+      if (modifier === 'AM' && hh === 12) hh = 0;
+      h = hh;
+      m = mm ?? 0;
+    }
+
+    // Build date object (all on same day, only hours/minutes matter)
+    const date = new Date();
+    date.setHours(h, m, 0, 0);
+
+    return date;
+  }
 }

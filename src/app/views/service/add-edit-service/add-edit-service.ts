@@ -19,6 +19,7 @@ import { ServiceApi } from '../../../core/services/service/service';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
+import { GenericInput } from '@vanshasomani/generic-input';
 
 @Component({
   selector: 'app-add-edit-service',
@@ -31,6 +32,7 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     MatProgressSpinnerModule,
     CommonModule,
+    GenericInput
   ],
   templateUrl: './add-edit-service.html',
   styleUrl: './add-edit-service.css',

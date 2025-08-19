@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 import { LoaderService } from '../../../core/services/loader-service/loader-service';
@@ -12,15 +12,24 @@ import { PhoneNumberValidator } from '../../../shared/validators/phone-number.va
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { catchError, EMPTY, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
+import { GenericInput } from '@vanshasomani/generic-input';
+import { MatIcon } from '@angular/material/icon';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { TimeFormatService } from '../../../core/services/time-format-service/time-format-service';
+import { TimeRangeValidator } from '../../../shared/validators/start-end-time.validator';
 
 @Component({
   selector: 'app-my-profile',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogActions, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatSlideToggleModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogActions, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatSlideToggleModule, GenericInput, MatIcon, NgxMaterialTimepickerModule],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css'
 })
 export class MyProfile implements OnInit {
   myProfileForm!: FormGroup;
+  previewImage: string | null = null;
+  selectedFile: File | null = null;
+  canNotEdit: boolean = false;
+  fileError: string = '';
 
   constructor(
     private dialogRef: MatDialogRef<MyProfile>,
@@ -29,22 +38,66 @@ export class MyProfile implements OnInit {
     private toastService: SweetToastService,
     private loaderService: LoaderService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private timeFormatService: TimeFormatService
   ) {}
 
   ngOnInit(): void {
     this.authService.myProfileGet().subscribe({
       next: (res) => {
         console.log("res - ", res);
+        this.canNotEdit = res.canNotEditTime;
         this.myProfileForm = this.fb.group({
           userId: [res.userId],
           name: [res.name, Validators.required],
           phoneNo: [res.phoneNo.toString(), [Validators.required, PhoneNumberValidator]],
           isProvider: [res.isProvider],
-          isAvailable: [res.isAvailable]
+          isAvailable: [res.isAvailable],
+          startTime: [this.timeFormatService.transform(res.startTime, 'short'), [Validators.required]],
+          endTime: [this.timeFormatService.transform(res.endTime, 'short'), [Validators.required]]
+        },
+        {
+          validators: [TimeRangeValidator(this.timeFormatService, [])]
         });
+        if (res.profileImageUrl) {
+          this.previewImage = res.profileImageUrl;
+        }
+        if (this.canNotEdit) {
+          this.myProfileForm.get('startTime')?.disable();
+          this.myProfileForm.get('endTime')?.disable();
+        } else {
+          this.myProfileForm.get('startTime')?.enable();
+          this.myProfileForm.get('endTime')?.enable();
+        }
       }
     });
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    this.fileError = '';
+    if (this.selectedFile) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(this.selectedFile.type)) {
+        this.fileError = 'Please upload a valid image file (jpg, png, gif, webp)';
+        this.selectedFile = null;
+        event.target.value = ''; // reset file input
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewImage = reader.result as string;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  get nameControl(): FormControl {
+    return this.myProfileForm.get('name') as FormControl;
+  }
+  get phoneNoControl(): FormControl {
+    return this.myProfileForm.get('phoneNo') as FormControl;
   }
 
   close(): void {
@@ -53,12 +106,31 @@ export class MyProfile implements OnInit {
 
   submit(): void{
     if(this.myProfileForm.invalid) return;
+    const formValue = this.myProfileForm.getRawValue();
+    const formattedModel = {
+      ...formValue,
+      startTime: this.timeFormatService.transform(formValue.startTime, '24hr'),
+      endTime: this.timeFormatService.transform(formValue.endTime, '24hr')
+    };
 
-    this.authService.myProfilePost(this.myProfileForm.value).subscribe({
+    const formData = new FormData();
+    Object.keys(this.myProfileForm.value).forEach(key => {
+      formData.append(key, this.myProfileForm.value[key]);
+    });
+    if (this.selectedFile) {
+      formData.append('ProfileImage', this.selectedFile);
+    }
+
+    this.authService.myProfilePost(formData).subscribe({
       next: (res) => {
         if(res.success){
           this.toastService.showSuccess(res.message || 'Profile updated successfully');
           // this.authService.setUserName(this.myProfileForm.get('name')?.value);
+          this.authService.getUserProfileImg().subscribe({
+            next: (res) => {
+              this.authService.setUserImage(res.profileImg);
+            }
+          });
           this.dialogRef.close(true);
         }
         else{
