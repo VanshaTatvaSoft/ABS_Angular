@@ -51,14 +51,15 @@ export class MyProfile implements OnInit {
           userId: [res.userId],
           name: [res.name, Validators.required],
           phoneNo: [res.phoneNo.toString(), [Validators.required, PhoneNumberValidator]],
-          isProvider: [res.isProvider],
-          isAvailable: [res.isAvailable],
-          startTime: [this.timeFormatService.transform(res.startTime, 'short'), [Validators.required]],
-          endTime: [this.timeFormatService.transform(res.endTime, 'short'), [Validators.required]]
-        },
-        {
-          validators: [TimeRangeValidator(this.timeFormatService, [])]
+          isProvider: [res.isProvider]
         });
+
+        if(res.isProvider){
+          this.myProfileForm.addControl('isAvailable',new FormControl(res.isAvailable));
+          this.myProfileForm.addControl('startTime', new FormControl(this.timeFormatService.transform(res.startTime, 'short'), [Validators.required]));
+          this.myProfileForm.addControl('endTime', new FormControl(this.timeFormatService.transform(res.endTime, 'short'), [Validators.required]));
+          this.myProfileForm.setValidators(TimeRangeValidator(this.timeFormatService, []));
+        }
         if (res.profileImageUrl) {
           this.previewImage = res.profileImageUrl;
         }
@@ -107,6 +108,7 @@ export class MyProfile implements OnInit {
   submit(): void{
     if(this.myProfileForm.invalid) return;
     const formValue = this.myProfileForm.getRawValue();
+    debugger
     const formattedModel = {
       ...formValue,
       startTime: this.timeFormatService.transform(formValue.startTime, '24hr'),
@@ -125,7 +127,7 @@ export class MyProfile implements OnInit {
       next: (res) => {
         if(res.success){
           this.toastService.showSuccess(res.message || 'Profile updated successfully');
-          // this.authService.setUserName(this.myProfileForm.get('name')?.value);
+          this.authService.setUserName(this.myProfileForm.get('name')?.value);
           this.authService.getUserProfileImg().subscribe({
             next: (res) => {
               this.authService.setUserImage(res.profileImg);

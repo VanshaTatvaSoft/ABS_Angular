@@ -5,14 +5,17 @@
       <input type="text" class="form-control" placeholder="Search" [formControl]="searchControl">
     </div>
     <div>
-      <button mat-raised-button color="primary" (click)="openAssignServiceDialog(this.providerId ?? 0)"><mat-icon>add</mat-icon> Add Service</button>
+      <button mat-raised-button color="primary" (click)="openAssignServiceDialog(this.providerId ?? 0)">
+        <mat-icon>add</mat-icon>
+        Add Service
+      </button>
     </div>
   </div>
 </div>
 
 <div class="card mx-4 mt-3">
   <span id="MyBookingListContainer">
-    <div class="card-body p-0 mb-4" style="overflow-y: auto;">
+    <div class="card-body p-0" style="overflow-y: auto;">
       <app-generic-table
         [data]="data?.myServices"
         [columns]="columns"

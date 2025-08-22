@@ -1,0 +1,33 @@
+.mat-header-cell{
+  background-color: #636363 !important;
+  color: white !important;
+  font-size: 15px;
+}
+
+.mat-header-cell:first-child {
+  border-top-left-radius: 10px !important;
+}
+.mat-header-cell:last-child {
+  border-top-right-radius: 10px !important;
+}
+
+.mat-paginator{
+  border-bottom: 10px !important;
+}
+
+tr:nth-child(2n) {
+  background-color: #dbdbdb;
+  border: red 2px !important;
+}
+
+::ng-deep .mat-mdc-cell{
+  border-bottom: none !important;
+}
+
+::ng-deep .mat-mdc-paginator-container{
+  font-size: 12px !important;
+}
+
+::ng-deep .mat-sort-header-arrow svg {
+  fill: white !important;
+}

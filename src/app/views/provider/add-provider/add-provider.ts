@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,16 +9,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 import { PhoneNumberValidator } from '../../../shared/validators/phone-number.validator';
 import { ProviderService } from '../../../core/services/provider/provider.service';
+import { GenericInput } from '@vanshasomani/generic-input';
+import { AddProviderForm } from './add-provider.helper';
 
 @Component({
   selector: 'app-add-provider',
-  imports: [MatDialogActions, MatDialogContent, MatDialogModule, MatInputModule, MatFormFieldModule, ReactiveFormsModule, MatButtonModule, MatProgressSpinnerModule, CommonModule],
+  imports: [MatDialogActions, MatDialogContent, MatDialogModule, MatInputModule, MatFormFieldModule, ReactiveFormsModule, MatButtonModule, MatProgressSpinnerModule, CommonModule, GenericInput],
   templateUrl: './add-provider.html',
   styleUrl: './add-provider.css'
 })
 export class AddProvider {
   addProviderForm: FormGroup;
   isSaving = false;
+  addProviderFormConfig = AddProviderForm;
 
   constructor(private fb: FormBuilder,private dialogRef: MatDialogRef<AddProvider>, @Inject(MAT_DIALOG_DATA) public data: any, private toastService: SweetToastService, private providerService: ProviderService){
     this.addProviderForm = this.fb.group({
@@ -28,28 +31,28 @@ export class AddProvider {
     })
   }
 
+  get providerNameControl() : FormControl{
+    return this.addProviderForm.get('providerName') as FormControl;
+  }
+
+  get providerEmailControl() : FormControl{
+    return this.addProviderForm.get('providerEmail') as FormControl;
+  }
+
+  get providerPhoneNoControl() : FormControl{
+    return this.addProviderForm.get('phoneNo') as FormControl;
+  }
+
   submit(): void{
     if(this.addProviderForm.invalid) return;
-
     this.isSaving = true;
-
     this.providerService.addProvider(this.addProviderForm.value).subscribe({
       next: (res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || 'Provider added successfuly');
-          this.dialogRef.close(true);
-          this.isSaving = false;
-        }
-        else{
-          this.toastService.showError(res.message || 'Error adding provider');
-          this.isSaving = false;
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Provider added successfuly' : 'Error adding provider'));
+        if(res.success) this.dialogRef.close(true);
       },
-      error: (err) => {
-        this.isSaving = false;
-        this.toastService.showError('An error occurred');
-        this.isSaving = false;
-      },
+      error: (err) => this.toastService.showError('An error occurred'),
+      complete: () => this.isSaving = false
     });
   }
 

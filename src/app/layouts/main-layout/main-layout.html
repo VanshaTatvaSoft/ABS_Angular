@@ -91,66 +91,7 @@
       </div>
     </nav>
     <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" [ngClass]="{ 'd-none': sidebarCollapse }">
-      <div class="sidebar-brand">
-        <a class="brand-link">
-          <span class="brand-text fs-6 fw-bold"><i class="bi bi-folder-fill fs-5"></i> Appointment Booking System</span>
-        </a>
-      </div>
-      <div class="sidebar-wrapper">
-        <nav class="mt-2">
-          <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
-            @if(userRole == "admin"){
-            <li class="nav-item">
-              <a class="nav-link" id="DashboardLink" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-speedometer me-2"></i>Dashboard</p>
-              </a>
-            </li>
-            } @if(userRole == "admin"){
-            <li class="nav-item">
-              <a class="nav-link" id="ServicesLink" routerLink="/services" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-gear me-2"></i>Services</p>
-              </a>
-            </li>
-            } @if(userRole == "admin"){
-            <li class="nav-item">
-              <a class="nav-link" id="ProvidersLink" routerLink="/providers" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-person-gear me-2"></i>Providers</p>
-              </a>
-            </li>
-            } @if(userRole == "provider"){
-            <li class="nav-item">
-              <a class="nav-link" id="MyServicesLink" routerLink="/my-services" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-house-gear me-2"></i>My Services</p>
-              </a>
-            </li>
-            } @if(userRole == "client"){
-            <li class="nav-item">
-              <a class="nav-link" id="BookApointmentLink" routerLink="/book-appointment" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-clipboard-check me-2"></i>Book Appointment</p>
-              </a>
-            </li>
-            } @if(userRole == "client"){
-            <li class="nav-item">
-              <a class="nav-link" id="MyBookingLink" routerLink="/my-bookings" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-calendar-check me-2"></i>My Booking</p>
-              </a>
-            </li>
-            } @if(userRole == "provider"){
-            <li class="nav-item">
-              <a class="nav-link" id="MyScheduleLink" routerLink="/my-schedule" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-card-checklist me-2"></i>My Schedule</p>
-              </a>
-            </li>
-            } @if(userRole == "provider"){
-            <li class="nav-item">
-              <a class="nav-link" id="MyServicesLink" routerLink="/toadys-break" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-                <p class="fs-5"><i class="bi bi-cup-hot me-2"></i>Today's Break</p>
-              </a>
-            </li>
-            }
-          </ul>
-        </nav>
-      </div>
+      <app-side-bar></app-side-bar>
     </aside>
     <main class="app-main" style="background-color: #dde0e4;;">
       <router-outlet></router-outlet>

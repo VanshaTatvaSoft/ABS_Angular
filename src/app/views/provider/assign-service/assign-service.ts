@@ -11,15 +11,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SignalrService } from '../../../core/services/signalr-service/signalr-service';
+import { GenericInput } from '@vanshasomani/generic-input';
 
 @Component({
   selector: 'app-assign-service',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatSelectModule, CommonModule, MatProgressSpinnerModule, MatDialogContent, MatDialogActions],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatSelectModule, CommonModule, MatProgressSpinnerModule, MatDialogContent, MatDialogActions, GenericInput],
   templateUrl: './assign-service.html',
   styleUrl: './assign-service.css'
 })
 export class AssignService {
-  assignForm!: FormGroup;
   assignModel!: AssignServiceViewModel;
   selectedServiceIds: number[] = [];
   isSaving = false;
@@ -34,25 +34,17 @@ export class AssignService {
   ) {}
 
   ngOnInit(): void {
-    // console.log('Calling with Provider ID:', this.data.providerId, 'and role:', this.data.role);
+    this.getAssignService();
+    this.signalrService.startConnection();
+    this.signalrService.myService = (msg) => { this.getAssignService(); }
+    this.signalrService.service = (msg) => { this.getAssignService(); }
+  }
+
+  getAssignService() {
     this.providerService.getAssignService(this.data.providerId).subscribe(res => {
       this.assignModel = res;
       this.selectedServiceIds = [...res.existingServiceId];
     });
-
-    this.signalrService.myService = (msg) => {
-      this.providerService.getAssignService(this.data.providerId).subscribe(res => {
-        this.assignModel = res;
-        this.selectedServiceIds = [...res.existingServiceId];
-      });
-    }
-
-    this.signalrService.service = (msg) => {
-      this.providerService.getAssignService(this.data.providerId).subscribe(res => {
-        this.assignModel = res;
-        this.selectedServiceIds = [...res.existingServiceId];
-      });
-    }
   }
 
   isChecked(serviceId: number): boolean {
@@ -60,11 +52,8 @@ export class AssignService {
   }
 
   onCheckboxChange(serviceId: number, event: MatCheckboxChange): void {
-    if (event.checked) {
-      this.selectedServiceIds.push(serviceId);
-    } else {
-      this.selectedServiceIds = this.selectedServiceIds.filter(id => id !== serviceId);
-    }
+    if (event.checked) this.selectedServiceIds.push(serviceId);
+    else this.selectedServiceIds = this.selectedServiceIds.filter(id => id !== serviceId);
   }
 
 
@@ -72,29 +61,16 @@ export class AssignService {
     const newlySelected = this.selectedServiceIds.filter(id => !this.assignModel.existingServiceId.includes(id));
     const removed = this.assignModel.existingServiceId.filter(id => !this.selectedServiceIds.includes(id));
     this.isSaving = true;
-
     this.providerService.assignServices(this.assignModel.providerId, newlySelected, removed)
     .subscribe({
       next: (res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || "Service assigned successfuly");
-          this.dialogRef.close(true);
-          this.isSaving = false;
-        }
-        else{
-          this.toastService.showError(res.message || "Error assigning service");
-          this.isSaving = false;
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || res.success ? 'Service assigned successfuly' : 'Error assigning service');
+        if(res.success) this.dialogRef.close(true);
       },
-      error: (err) => {
-        console.error('Failed to assign services:', err);
-        this.isSaving = false;
-      }
+      error: (err) => this.toastService.showError('An error occurred while assigning services'),
+      complete: () => this.isSaving = false
     });
-
   }
 
-  close(): void {
-    this.dialogRef.close(false);
-  }
+  close = (): void =>  this.dialogRef.close(false);
 }

@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { MyServiceService } from '../../core/services/my-service/my-service.service';
-import { MyServiceViewModel } from '../../core/models/my-service.interface';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule, MatIconButton } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { GenericTable } from '../../shared/components/generic-table/generic-table';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { Sort } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { AssignService } from '../provider/assign-service/assign-service';
+import { MatIconModule } from '@angular/material/icon';
+import { Sort } from '@angular/material/sort';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { MyServiceViewModel } from '../../core/models/my-service.interface';
+import { MyServiceService } from '../../core/services/my-service/my-service.service';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { TimeFormatService } from '../../core/services/time-format-service/time-format-service';
+import { GenericTable } from '../../shared/components/generic-table/generic-table';
+import { AssignService } from '../provider/assign-service/assign-service';
+import { MyServiceColumnHeader } from './my-service.helper';
 
 @Component({
   selector: 'app-my-service',
@@ -22,15 +23,7 @@ import { TimeFormatService } from '../../core/services/time-format-service/time-
 export class MyService implements OnInit{
   data? : MyServiceViewModel;
   searchControl = new FormControl('');
-
-  columns = [
-    { key: 'serial', header: '#', sortable: false },
-    { key: 'serviceName', header: 'Service Name', sortable: true },
-    { key: 'serviceDesc', header: 'Service Description', sortable: false },
-    { key: 'duration', header: 'Duration', sortable: true },
-    { key: 'price', header: 'Price', sortable: true }
-  ];
-
+  columns = MyServiceColumnHeader;
   totalCount = 0;
   page = 1;
   pageSize = 5;
@@ -38,31 +31,22 @@ export class MyService implements OnInit{
   sortDirection = 'asc';
   searchData = '';
   providerId?: number;
-
+  
   constructor(private myServcieApi: MyServiceService, private dialog: MatDialog, private signalrService: SignalrService, private timeFormatService: TimeFormatService){ }
 
   ngOnInit(): void {
     this.loadData();
     this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe((value: string | null) => {
-        this.onSearch(value ?? '');
-      });
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value: string | null) => {this.onSearch(value ?? '');});
 
     this.signalrService.startConnection();
-
-    this.signalrService.provider = (msg) => {
-      this.loadData();
-    }
+    this.signalrService.provider = (msg) => { this.loadData(); }
   }
 
   loadData(): void{
     this.myServcieApi.getMyServices(this.page, this.pageSize, this.sortBy, this.sortDirection, this.searchData).subscribe({
       next: (res) => {
-        // console.log(res);
         this.data = {
           providerId: res.providerId,
           servicePagination: res.servicePagination,
@@ -108,9 +92,7 @@ export class MyService implements OnInit{
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadData();
-      }
+      if (result) { this.loadData(); }
     });
   }
 

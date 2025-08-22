@@ -4,6 +4,11 @@
     <div class="me-2">
       <input type="text" class="form-control" placeholder="Search" [formControl]="searchControl">
     </div>
+    <div class="me-2">
+      <button mat-raised-button color="primary" (click)="exportToPdf()">Export To PDF
+        <mat-icon>picture_as_pdf</mat-icon>
+      </button>
+    </div>
     <div>
       <button mat-raised-button color="primary" (click)="openAddProviderDailog()"><mat-icon>add</mat-icon> Add Provider</button>
     </div>
@@ -20,14 +25,14 @@
   </mat-tab-group>
 
   <ng-template #actionBtns let-row>
-    <button matMiniFab color="primary" class="mt-1 mx-2" aria-label="Example icon button with a home icon" (click)="OpenEditProviderDailog(row.providerId)">
+    <button matMiniFab color="primary" class="mt-1 mx-2" (click)="OpenEditProviderDailog(row.providerId)">
       <mat-icon>edit</mat-icon>
     </button>
-    <button matMiniFab color="primary" class="mt-1 mx-2" aria-label="Example icon button with a home icon" (click)="deleteProvider(row.providerId)">
+    <button matMiniFab color="primary" class="mt-1 mx-2" (click)="deleteProvider(row.providerId)">
       <mat-icon>delete</mat-icon>
     </button>
     <!-- Assign Service -->
-    <button matMiniFab color="primary" class="mt-1 mx-2" aria-label="Example icon button with a home icon" (click)="openAssignServiceDialog(row.providerId)">
+    <button matMiniFab color="primary" class="mt-1 mx-2" (click)="openAssignServiceDialog(row.providerId)">
       <mat-icon><i class="bi bi-person-check-fill"></i></mat-icon>
     </button>
   </ng-template>

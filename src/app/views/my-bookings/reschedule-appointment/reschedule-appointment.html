@@ -14,19 +14,8 @@
       </div>
     </div>
 
-    <!-- <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Choose a date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="RescheduleAppointmentDate" [min]="minDate" />
-      <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="picker" ></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="rescheduleForm.get('appointmentDate')?.touched || rescheduleForm.get('appointmentDate')?.dirty">
-        <span *ngIf="rescheduleForm.get('appointmentDate')?.hasError('required')">Appointment date is required</span>
-      </mat-error>
-    </mat-form-field> -->
-
     <div class="list-group" style="max-height: 200px; overflow-y: auto;">
-      @if(this.rescheduleData?.slotsAvailable){
+      @if(this.rescheduleData.slotsAvailable.length > 0){
         @for (s of rescheduleData.slotsAvailable; track s.startTime) {
           <label class="list-group-item list-group-item-action d-flex align-items-center gap-2 fs-4">
             <input

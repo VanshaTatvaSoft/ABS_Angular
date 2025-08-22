@@ -12,9 +12,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditService } from './add-edit-service/add-edit-service';
 import { SweetToastService } from '../../core/services/toast/sweet-toast.service';
-import { DeleteService } from './delete-service/delete-service';
-import Swal from 'sweetalert2';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
+import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
+import { DeleteServiceSwalConfig, ServiceColumnHeader,  } from './service-helper';
 
 @Component({
   selector: 'app-service',
@@ -25,16 +25,7 @@ import { SignalrService } from '../../core/services/signalr-service/signalr-serv
 export class Service implements OnInit {
   services: ServiceInfo[] = [];
   searchControl = new FormControl('');
-
-  columns = [
-    { key: 'serial', header: '#', sortable: false },
-    { key: 'serviceName', header: 'Name', sortable: true },
-    { key: 'serviceDesc', header: 'Description', sortable: false },
-    { key: 'duration', header: 'Duration', sortable: true },
-    { key: 'price', header: 'Price', sortable: true },
-    { key: 'count', header: 'Provided Count', sortable: true },
-  ];
-
+  columns = ServiceColumnHeader;
   totalCount = 0;
   page = 1;
   pageSize = 5;
@@ -42,23 +33,15 @@ export class Service implements OnInit {
   sortDirection = 'asc';
   searchString = '';
 
-  constructor(private serviceApi: ServiceApi, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService) {}
+  constructor(private serviceApi: ServiceApi, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService) {}
 
   ngOnInit(): void {
     this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe((value: string | null) => {
-        this.onSearch(value ?? '');
-      });
+      .pipe( debounceTime(300), distinctUntilChanged() )
+      .subscribe((value: string | null) => { this.onSearch(value ?? ''); });
 
     this.signalrService.startConnection();
-
-    this.signalrService.service = (msg) => {
-      this.fetchData();
-    }
+    this.signalrService.service = (msg) => { this.fetchData(); }
 
     this.fetchData();
   }
@@ -67,8 +50,6 @@ export class Service implements OnInit {
     this.serviceApi.getServices(this.searchString, this.page, this.pageSize, this.sort, this.sortDirection).subscribe((res) => {
       this.services = res.serviceList;
       this.totalCount = res.servicePagination.totalRecord;
-      // console.log("ServiceInfo - ", this.services);
-      // console.log("TotalCount - ", this.totalCount);
     });
   }
 
@@ -79,7 +60,6 @@ export class Service implements OnInit {
   }
 
   onSortChange(sort: Sort) {
-    // console.log("Sort changed", sort);
     this.sort = sort.direction ? sort.active : 'default';
     this.sortDirection = sort.direction || 'asc';
     this.fetchData();
@@ -91,47 +71,23 @@ export class Service implements OnInit {
     this.fetchData();
   }
 
-  editService(row: ServiceInfo) {
-    // console.log("Edit clicked", row);
-    this.openAddEditServiceDialog(row);
-
-  }
+  editService = (row: ServiceInfo) => this.openAddEditServiceDialog(row);
 
   deleteService(row: ServiceInfo) {
-    // console.log("Delete clicked", row);
-
-    Swal.fire({
-      title: "Delete Service",
-      text: "Are you sure you want to delete this service?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, keep it'
-    }).then((result) => {
-      if(result.isConfirmed){
+    this.confirmationService.confirm(DeleteServiceSwalConfig).then(confirmed => {
+      if(confirmed){
         this.serviceApi.deleteService(row.serviceId).subscribe({
-          next: (res) => {
-            if(res.success){
-              this.toastService.showSuccess(res.message || 'Service delted successfully');
-            }
-            else{
-              this.toastService.showError(res.message || 'Error deleting service');
-            }
-          },
-          error: (err) => {
-            this.toastService.showError('Something went wrong');
-          }
+          next: (res) => this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Service delted successfully' : 'Error deleting service')),
+          error: (err) => this.toastService.showError('Something went wrong'),
         })
       }
     })
-
-    // this.openDeleteServiceDailog(row);
   }
 
   openAddEditServiceDialog(service?: ServiceInfo) {
     const dialogRef = this.dialog.open(AddEditService, {
       width: '400px',
-      data: service ? { ...service } : {} // Optional: pass any data here
+      data: service ? { ...service } : {}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -140,18 +96,4 @@ export class Service implements OnInit {
       }
     });
   }
-
-  openDeleteServiceDailog(service: ServiceInfo) {
-    const deletedialogRef = this.dialog.open(DeleteService, {
-      width: '500px',
-      data: {... service}
-    });
-
-    deletedialogRef.afterClosed().subscribe(result => {
-      if(result){
-        this.fetchData();
-      }
-    })
-  }
-
 }

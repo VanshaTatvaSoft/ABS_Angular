@@ -17,19 +17,6 @@
         </mat-form-field>
       </div>
     </div>
-
-    <!-- <mat-form-field appearance="outline" class="w-100">
-      <mat-label>Services</mat-label>
-      <mat-select>
-        <mat-option *ngFor="let service of assignModel.serviceList">
-          <mat-checkbox
-            [checked]="isChecked(service.serviceId)"
-            (change)="onCheckboxChange(service.serviceId, $event)">
-            {{ service.serviceName }} - {{ service.serviceId }}
-          </mat-checkbox>
-        </mat-option>
-      </mat-select>
-    </mat-form-field> -->
     <mat-label>Services</mat-label>
     @for (service of assignModel.serviceList; track service.serviceId) {
       <div>

@@ -1,18 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogActions,
-  MatDialogContent,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ServiceApi } from '../../../core/services/service/service';
@@ -23,17 +12,7 @@ import { GenericInput } from '@vanshasomani/generic-input';
 
 @Component({
   selector: 'app-add-edit-service',
-  imports: [
-    MatInputModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatDialogActions,
-    MatDialogContent,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    CommonModule,
-    GenericInput
-  ],
+  imports: [ MatInputModule, MatFormFieldModule, ReactiveFormsModule, MatDialogActions, MatDialogContent, MatButtonModule, MatProgressSpinnerModule, CommonModule, GenericInput ],
   templateUrl: './add-edit-service.html',
   styleUrl: './add-edit-service.css',
 })
@@ -75,41 +54,26 @@ export class AddEditService {
 
   save() {
     if (this.serviceForm.invalid) return;
-
     const formValue = this.serviceForm.value;
     this.isSaving = true;
-
     const payload = {
       ...formValue,
-      // convert time string to TimeSpan-compatible format
       duration: formValue.duration.length === 5 ? formValue.duration + ':00' : formValue.duration,
     };
 
-    const action$ = formValue.serviceId
-      ? this.serviceApi.editService(payload)
-      : this.serviceApi.addService(payload);
+    const action$ = formValue.serviceId ? this.serviceApi.editService(payload) : this.serviceApi.addService(payload);
 
     action$.subscribe({
       next: (res) => {
-        if (res.success) {
-          this.toastService.showSuccess(res.message || 'Saved');
-          this.dialogRef.close(true); // only close on success
-          this.isSaving = false;
-        } else {
-          this.toastService.showError(res.message || 'Something went wrong');
-          this.isSaving = false;
-        }
+        debugger
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Service saved successfully' : 'Something went wrong'));
+        if(res.success) this.dialogRef.close(true);
       },
-      error: (err) => {
-        this.isSaving = false;
-        this.toastService.showError('An error occurred');
-        this.isSaving = false;
-      },
+      error: () => this.toastService.showError('An error occurred'),
+      complete: () => this.isSaving = false
     });
 
   }
 
-  cancel() {
-    this.dialogRef.close(null);
-  }
+  cancel = (): void => this.dialogRef.close(null);
 }

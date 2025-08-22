@@ -1,16 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { PasswordStrengthValidator } from '../../../shared/validators/password-strength.validator';
 import { CustomInput } from '../../../shared/components/custom-input/custom-input';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -62,27 +52,12 @@ export class ResetPassword implements OnInit {
 
   onSubmit(): void {
     if(this.resetPasswordForm.invalid) return;
-
     this.authService.resetPassword(this.resetPasswordForm.value).subscribe({
       next:(res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || 'Password reset successfully. Please login with your new password.');
-          this.router.navigate(['/login']);
-        }
-        else {
-          this.toastService.showError(res.message || 'Failed to reset password. Please try again later.');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Password reset successfully. Please login with your new password.' : 'Failed to reset password. Please try again later.'));
+        if(res.success) this.router.navigate(['/login']);
       },
-      error: (err) => {
-        if(err.status === 400){
-          this.toastService.showError(err.error?.message || 'Invalid reset password request.');
-        }
-        else {
-          this.toastService.showError(err.message || 'An error occurred while resetting the password.');
-        }
-      }
+      error: (err) => this.toastService.showError(err.status === 400 ? err.error?.message || 'Invalid reset password request.' : err.message || 'An error occurred while resetting the password.')
     });
-    // console.log('Reset Password Form Submitted', this.resetPasswordForm.value);
   }
-
 }

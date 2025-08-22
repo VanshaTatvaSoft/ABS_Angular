@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CustomInput } from '../../../shared/components/custom-input/custom-input';
 import { RoleOptions } from '../../../shared/constants/role-options.constant';
 import { PasswordStrengthValidator } from '../../../shared/validators/password-strength.validator';
 import { AuthService } from '../../../core/services/auth/auth.service';
@@ -12,7 +11,7 @@ import { GenericInput } from '@vanshasomani/generic-input';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, CommonModule, ReactiveFormsModule, CustomInput, GenericInput],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, GenericInput],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -45,29 +44,14 @@ export class Register {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: (res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || 'Registration successful. Please login to continue.');
-          this.router.navigate(['/login']);
-        }
-        else{
-          this.toastService.showError(res.message || 'Registration failed. Please try again.');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Registration successful. Please login to continue.' : 'Registration failed. Please try again.'));
+        if(res.success) this.router.navigate(['/login']);
       },
-      error: (err) => {
-        if(err.status === 400) {
-          const errorMessage = err.error?.message || 'Invalid registration data. Please check your inputs.';
-          this.toastService.showError(errorMessage);
-        }
-        else{
-          this.toastService.showError('Registration failed. Please try again later.');
-        }
-      }
+      error: (err) => this.toastService.showError(err.status === 400 ? err.error?.message || 'Invalid registration data. Please check your inputs.' : 'Registration failed. Please try again later.')
     })
   }
 
-  onReset() {
-    this.registerForm.reset();
-  }
+  onReset = (): void => this.registerForm.reset();
 
   get nameControl(): FormControl {
     return this.registerForm.get('name') as FormControl;

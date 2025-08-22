@@ -60,7 +60,7 @@ export class BookingService {
     formData.append('clientName', form.clientName);
     formData.append('clientPhoneNo', form.clientPhoneNo);
     formData.append('clientEmail', form.clientEmail);
-    formData.append('startTime', selectedSlot.startTime); // ✅ Needed
+    formData.append('startTime', selectedSlot.startTime);
     formData.append('endTime', selectedSlot.endTime);
 
     const formattedDate = new Date(form.appointmentDate).toISOString().split('T')[0];
@@ -69,8 +69,6 @@ export class BookingService {
     // Extra form fields
     formData.append('serviceId', form.serviceId.toString());
     formData.append('providerId', providerId.toString());
-    // formData.append('bookingStartTime', selectedSlot.startTime);
-    // formData.append('bookingEndTime', selectedSlot.endTime);
 
     return this.http.post<ResponseInterface>(`${this.baseUrl}/book`, formData);
   }

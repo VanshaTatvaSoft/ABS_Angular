@@ -1,4 +1,4 @@
-import { Injectable, numberAttribute } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -40,6 +40,10 @@ export class AuthService {
 
   getUserName(): string {
     return this.userNameSubject.getValue();
+  }
+
+  getUserImage(): string | null {
+    return this.userImageSubject.getValue();
   }
 
   clearUserState(): void {

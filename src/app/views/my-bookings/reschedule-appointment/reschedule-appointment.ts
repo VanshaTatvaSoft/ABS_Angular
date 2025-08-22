@@ -7,18 +7,15 @@ import { CommonModule, formatDate } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { RescheduleAppointmentViewModel } from '../../../core/models/reschedule-appointment.interface';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { TimeFormatPipePipe } from '../../../core/pipes/time-format-pipe/time-format-pipe-pipe';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { SlotData } from '../../../core/models/available-slot.interface';
 import { LoaderService } from '../../../core/services/loader-service/loader-service';
-import {provideNativeDateAdapter} from '@angular/material/core';
-import { SignalrService } from '../../../core/services/signalr-service/signalr-service';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-reschedule-appointment',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatDatepickerModule, TimeFormatPipePipe, MatNativeDateModule, MatInputModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, TimeFormatPipePipe, MatInputModule],
   templateUrl: './reschedule-appointment.html',
   styleUrl: './reschedule-appointment.css',
   providers: [provideNativeDateAdapter()],
@@ -36,8 +33,7 @@ export class RescheduleAppointment implements OnInit {
     private fb: FormBuilder,
     private toastService: SweetToastService,
     private myBookingService: MyBookingService,
-    private loaderService: LoaderService,
-    private signalrService: SignalrService
+    private loaderService: LoaderService
   ) {
     this.appointmentId = data.appointmentId;
     this.appontmentDate = data.appointmentDate;
@@ -58,16 +54,12 @@ export class RescheduleAppointment implements OnInit {
     });
 
     this.getSchedule();
-
   }
 
   getSchedule(){
     this.myBookingService.getSlotsForReschedule(this.appointmentId?? 0, this.appontmentDate).subscribe({
       next: (res) => {
         this.rescheduleData = res.data;
-        // console.log("rescheduleData - ",this.rescheduleData);
-        this.rescheduleData = res.data;
-
         this.rescheduleForm.patchValue({
           providerId: this.rescheduleData.providerId,
           serviceId: this.rescheduleData.serviceId,
@@ -106,23 +98,15 @@ export class RescheduleAppointment implements OnInit {
   }
 
   submit(): void{
-    console.log("form data - ", this.rescheduleForm.value);
     this.loaderService.show();
     this.myBookingService.rescheduleAppointment(this.rescheduleForm).subscribe({
       next: (res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || '');
-        }
-        else{
-          this.toastService.showError(res.message || '');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || '');
         this.loaderService.hide();
         this.dialogRef.close(true);
       },
-      error: (err) => {
-        this.loaderService.hide();
-        this.toastService.showError('Something went wrong');
-      }
+      error: () => this.toastService.showError('Something went wrong'),
+      complete: () => this.loaderService.hide()
     });
   }
 

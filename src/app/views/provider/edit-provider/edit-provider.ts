@@ -1,24 +1,26 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { ProviderService } from '../../../core/services/provider/provider.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
-import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CommonModule, formatDate } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { EditProviderViewModel } from '../../../core/models/edit-provider.interface';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TimeFormatService } from '../../../core/services/time-format-service/time-format-service';
-import { TimeFormatterPipe } from 'ngx-material-timepicker/src/app/material-timepicker/pipes/time-formatter.pipe';
 import { TimeRangeValidator } from '../../../shared/validators/start-end-time.validator';
+import { EditProviderForm } from './edit-provider.helper';
+import { GenericInput } from '@vanshasomani/generic-input';
+import { PhoneNumberValidator } from '../../../shared/validators/phone-number.validator';
 
 @Component({
   selector: 'app-edit-provider',
-  imports: [MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatDialogActions, CommonModule, FormsModule, MatButtonModule, ReactiveFormsModule, NgxMaterialTimepickerModule, MatCheckboxModule, MatSlideToggleModule ],
+  imports: [MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatDialogActions, CommonModule, FormsModule, MatButtonModule, ReactiveFormsModule, NgxMaterialTimepickerModule, MatCheckboxModule, MatSlideToggleModule, GenericInput ],
   templateUrl: './edit-provider.html',
   styleUrl: './edit-provider.css'
 })
@@ -27,6 +29,7 @@ export class EditProvider implements OnInit{
   editModel!: EditProviderViewModel;
   editForm!: FormGroup;
   daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  editProviderFormConfig = EditProviderForm;
 
   constructor(
     private dialogRef: MatDialogRef<EditProvider>,
@@ -38,16 +41,13 @@ export class EditProvider implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    // console.log('Calling with Provider ID:', this.providerId);
     this.providerService.getEditProvider(this.providerId).subscribe(res => {
       this.editModel = res;
-      // console.log('res - ',res);
-      console.log("Edit Model - ",this.editModel);
       this.editForm = this.fb.group({
         providerId: [res.providerId],
         email: [{ value: res.email, disabled: true }],
         name: [res.name, [Validators.required]],
-        phoneNo: [res.phoneNo, [Validators.required]],
+        phoneNo: [res.phoneNo, [Validators.required, PhoneNumberValidator]],
         providerAvailabilityId: [res.providerAvailabilityId],
         isRecurring: [res.isRecurring],
         isAvailable: [res.isAvailable],
@@ -61,41 +61,36 @@ export class EditProvider implements OnInit{
     });
   }
 
-  formatTime(time: string): string {
-    return time?.slice(0, 5); // "09:30:00" -> "09:30"
+  get emailControl() : FormControl{
+    return this.editForm.get('email') as FormControl;
+  }
+  get nameControl() : FormControl{
+    return this.editForm.get('name') as FormControl;
+  }
+  get phoneNoControl() : FormControl{
+    return this.editForm.get('phoneNo') as FormControl;
+  }
+  get isRecurringControl() : FormControl{
+    return this.editForm.get('isRecurring') as FormControl;
+  }
+  get isAvailableControl() : FormControl{
+    return this.editForm.get('isAvailable') as FormControl;
+  }
+  get startTimeControl() : FormControl{
+    return this.editForm.get('startTime') as FormControl;
+  }
+  get endTimeControl() : FormControl{
+    return this.editForm.get('endTime') as FormControl;
   }
 
   toggleDay(day: string) {
     const selected = this.editForm.value.days;
-    if (selected.includes(day)) {
-      this.editForm.patchValue({ days: selected.filter((d: string) => d !== day) });
-    } else {
-      this.editForm.patchValue({ days: [...selected, day] });
-    }
-  }
-
-  convertTo24HrFormat(time: string): string {
-    if (!time) return '';
-    const [hourPart, modifier] = time.split(' ');
-    let [hours, minutes] = hourPart.split(':').map(Number);
-
-    if (modifier === 'PM' && hours < 12) {
-      hours += 12;
-    }
-    if (modifier === 'AM' && hours === 12) {
-      hours = 0;
-    }
-
-    const h = hours.toString().padStart(2, '0');
-    const m = minutes.toString().padStart(2, '0');
-
-    return `${h}:${m}:00`;
+    if (selected.includes(day)) this.editForm.patchValue({ days: selected.filter((d: string) => d !== day) });
+    else this.editForm.patchValue({ days: [...selected, day] });
   }
 
   submit(): void{
     this.isSaving = true;
-    // console.log("Form Value - ",this.editForm.value);
-
     const formValue = this.editForm.getRawValue(); // includes disabled fields like email
     const selectedDays = JSON.stringify(formValue.days);
 
@@ -106,29 +101,15 @@ export class EditProvider implements OnInit{
       endTime: this.timeFormatService.transform(formValue.endTime, '24hr')
     };
 
-    // console.log("formattedModel - ",formattedModel);
-
     this.providerService.editProvider(formattedModel, selectedDays).subscribe({
       next:(res) => {
-        if(res.success){
-          this.isSaving = false;
-          this.toastService.showSuccess(res.message?? 'Provider edited successfully');
-          this.dialogRef.close(true);
-        }
-        else{
-          this.isSaving = false;
-          this.toastService.showError(res.message?? 'Error editing provider')
-        }
+        this.toastService[res.success ? 'showSuccess' : "showError"](res.message || (res.success ? 'Provider edited successfully' : 'Error editing provider'))
+        if(res.success) this.dialogRef.close(true);
       },
-      error: () => {
-        this.isSaving = false;
-        this.toastService.showError('Error updating provider');
-      },
+      error: () => this.toastService.showError('Error updating provider'),
+      complete: () => this.isSaving = false
     })
   }
 
-  close(): void {
-    this.dialogRef.close(false);
-  }
-
+  close = (): void => this.dialogRef.close(false);
 }

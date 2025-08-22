@@ -49,4 +49,8 @@ export class MyScheduleService {
   markAllAsRead(notificationIds: number[]): Observable<boolean> {
     return this.http.post<boolean>(`${this.baseUrl}/notifications/mark-all-read`, notificationIds);
   }
+
+  getProfileImageUrl(imageName: string): string {
+    return `${this.baseUrl}/${imageName}`;
+  }
 }

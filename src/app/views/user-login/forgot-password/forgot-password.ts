@@ -30,23 +30,12 @@ export class ForgotPassword {
 
     this.authService.forgotPassword(this.forgotPassowrdForm.value).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.toastService.showSuccess(res.message || 'Password reset link sent to your email.');
-          this.router.navigate(['/login']);
-        } else {
-          this.toastService.showError(res.message || 'Failed to send password reset link. Please try again later.');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Password reset link sent to your email.' : 'Failed to send password reset link. Please try again later.'));
+        if (res.success) this.router.navigate(['/login']);
       },
-      error: (err) => {
-        if(err.status === 400) {
-          const errorMessage = err.error?.message || 'Invalid email address. Please check your input.';
-          this.toastService.showError(errorMessage);
-        }
-        else {
-          this.toastService.showError('An unexpected error occurred. Please try again later.');
-        }
-      }
+      error: (err) => this.toastService.showError(err.status === 400 ?
+        err.error?.message || 'Invalid email address. Please check your input.' :
+        'An unexpected error occurred. Please try again later.')
     })
   }
-
 }

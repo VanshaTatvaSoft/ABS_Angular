@@ -7,30 +7,40 @@
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Name</mat-label>
       <input matInput formControlName="name" />
-      <mat-error *ngIf="myProfileForm.get('name')?.hasError('required') && (myProfileForm.get('name')?.touched || myProfileForm.get('name')?.dirty)">
-        Name is required.
-      </mat-error>
+      @if(myProfileForm.get('name')?.hasError('required') && (myProfileForm.get('name')?.touched || myProfileForm.get('name')?.dirty)){
+        <mat-error>
+          Name is required.
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Phone Field -->
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Phone No</mat-label>
       <input matInput formControlName="phoneNo" />
-      <mat-error *ngIf="myProfileForm.get('phoneNo')?.touched || myProfileForm.get('phoneNo')?.dirty">
-        <span *ngIf="myProfileForm.get('phoneNo')?.hasError('required')">Phone number is required</span>
-        <span *ngIf="myProfileForm.get('phoneNo')?.hasError('invalidPhone')">Enter valid phone number</span>
-      </mat-error>
+      @if(myProfileForm.get('phoneNo')?.touched || myProfileForm.get('phoneNo')?.dirty){
+        <mat-error>
+          @if(myProfileForm.get('phoneNo')?.hasError('required')){
+            <span>Phone number is required</span>
+          }
+          @else if (myProfileForm.get('phoneNo')?.hasError('invalidPhone')) {
+            <span>Enter valid phone number</span>
+          }
+        </mat-error>
+      }
     </mat-form-field>
 
     <!-- Profile Image Upload -->
     <div class="profile-image-section">
       <div class="image-preview">
-        <img *ngIf="previewImage; else placeholder" [src]="previewImage" alt="Profile" />
-        <ng-template #placeholder>
+        @if(previewImage){
+          <img [src]="previewImage" alt="Profile" />
+        }
+        @else {
           <div class="placeholder">
             <mat-icon>account_circle</mat-icon>
           </div>
-        </ng-template>
+        }
       </div>
 
       <button mat-raised-button color="primary" type="button" (click)="fileInput.click()">
@@ -38,41 +48,47 @@
       </button>
       <input #fileInput type="file" hidden accept="image/*" (change)="onFileSelected($event)">
     </div>
-    <div class="error-message text-danger" *ngIf="fileError">
-      {{ fileError }}
-    </div>
+    @if(fileError){
+      <div class="error-message text-danger">
+        {{ fileError }}
+      </div>
+    }
 
     <!-- Provider Availability -->
-    <div *ngIf="myProfileForm.get('isProvider')?.value" class="mt-2">
-      <mat-slide-toggle formControlName="isAvailable" class="mb-2">Available</mat-slide-toggle>
+     @if(myProfileForm.get('isProvider')?.value){
+       <div class="mt-2">
+         <mat-slide-toggle formControlName="isAvailable" class="mb-2">Available</mat-slide-toggle>
 
-      <div class="d-flex gap-2 mt-2" *ngIf="myProfileForm.get('isAvailable')?.value">
-        <mat-form-field appearance="outline">
-          <mat-label>Set Start Time</mat-label>
-          <input matInput [ngxTimepicker]="startTimePicker" formControlName="startTime" readonly>
-          <ngx-material-timepicker #startTimePicker></ngx-material-timepicker>
-        </mat-form-field>
+         @if(myProfileForm.get('isAvailable')?.value){
+           <div class="d-flex gap-2 mt-2">
+             <mat-form-field appearance="outline">
+               <mat-label>Set Start Time</mat-label>
+               <input matInput [ngxTimepicker]="startTimePicker" formControlName="startTime" readonly>
+               <ngx-material-timepicker #startTimePicker></ngx-material-timepicker>
+             </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Set End Time</mat-label>
-          <input matInput [ngxTimepicker]="endTimePicker" formControlName="endTime" readonly>
-          <ngx-material-timepicker #endTimePicker></ngx-material-timepicker>
-        </mat-form-field>
-      </div>
+             <mat-form-field appearance="outline">
+               <mat-label>Set End Time</mat-label>
+               <input matInput [ngxTimepicker]="endTimePicker" formControlName="endTime" readonly>
+               <ngx-material-timepicker #endTimePicker></ngx-material-timepicker>
+             </mat-form-field>
+           </div>
+         }
 
-      <div>
-        @if(myProfileForm.errors?.['timeSame']){
-          <mat-error>
-            Start time and end time cannot be the same
-          </mat-error>
-        } @else if (myProfileForm.errors?.['startAfterEnd']) {
-          <mat-error>
-            Start time must be before end time
-          </mat-error>
-        }
-      </div>
+         <div>
+           @if(myProfileForm.errors?.['timeSame']){
+             <mat-error>
+               Start time and end time cannot be the same
+             </mat-error>
+           } @else if (myProfileForm.errors?.['startAfterEnd']) {
+             <mat-error>
+               Start time must be before end time
+             </mat-error>
+           }
+         </div>
 
-    </div>
+       </div>
+     }
 
   </mat-dialog-content>
 

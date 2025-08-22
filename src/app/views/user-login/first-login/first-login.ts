@@ -52,16 +52,10 @@ export class FirstLogin implements OnInit {
 
     this.authService.firstLogin(this.firstLoginForm.value).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.toastService.showSuccess(res.message || 'Password changed successfully. Please login with your new password.');
-          this.router.navigate(['/login']);
-        } else {
-          this.toastService.showError(res.message || 'Failed to change password. Please try again later.');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Password changed successfully. Please login with your new password.' : 'Failed to change password. Please try again later.'));
+        if(res.success) this.router.navigate(['/login']);
       },
-      error: (err) => {
-        this.toastService.showError(err.message || 'An error occurred while changing the password.');
-      }
+      error: (err) => this.toastService.showError(err.message || 'An error occurred while changing the password.')
     })
   }
 

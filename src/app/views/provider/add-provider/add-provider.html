@@ -1,54 +1,18 @@
 <h2 mat-dialog-title class="ms-3 pb-0">Add Provider</h2>
 <form [formGroup]="addProviderForm" (ngSubmit)="submit()">
   <mat-dialog-content>
-    <mat-form-field class="w-100" appearance="outline">
-      <mat-label>Provider Name</mat-label>
-      <input matInput type="text" formControlName="providerName">
-      @if(addProviderForm.get('providerName')?.hasError('required') && (addProviderForm.get('providerName')?.touched || addProviderForm.get('providerName')?.dirty)){
-        <mat-error>
-          Provider Name is required
-        </mat-error>
-      }
-    </mat-form-field>
+    <lib-generic-input [formControl]="providerNameControl" [config]="addProviderFormConfig.providerName"></lib-generic-input>
 
-    <mat-form-field class="w-100" appearance="outline">
-      <mat-label>Provider Email</mat-label>
-      <input matInput type="email" formControlName="providerEmail">
-      @if((addProviderForm.get('providerEmail')?.touched || addProviderForm.get('providerEmail')?.dirty)){
-        <mat-error>
-          @if(addProviderForm.get('providerEmail')?.hasError('required')){
-            <span>Email is required</span>
-          } @else if (addProviderForm.get('providerEmail')?.hasError('email')) {
-            <span>Enter a valid email</span>
-          }
-        </mat-error>
-      }
-    </mat-form-field>
+    <lib-generic-input [formControl]="providerEmailControl" [config]="addProviderFormConfig.providerEmail"></lib-generic-input>
 
-    <mat-form-field class="w-100" appearance="outline">
-      <mat-label>Provider Phone No</mat-label>
-      <input matInput formControlName="phoneNo">
-      @if(addProviderForm.get('phoneNo')?.touched || addProviderForm.get('phoneNo')?.dirty){
-        <mat-error>
-          @if(addProviderForm.get('phoneNo')?.hasError('required')){
-            <span>Phone number is required</span>
-          } @else if (addProviderForm.get('phoneNo')?.hasError('invalidPhone')) {
-            <span>Enter a valid phone number</span>
-          }
-        </mat-error>
-      }
-    </mat-form-field>
-
+    <lib-generic-input [formControl]="providerPhoneNoControl" [config]="addProviderFormConfig.phoneNo"></lib-generic-input>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
     <button mat-button type="button" (click)="cancel()">Cancel</button>
     <button mat-flat-button color="primary" type="submit" [disabled]="addProviderForm.invalid || this.isSaving">
-      @if(isSaving){
-        <mat-spinner diameter="20"></mat-spinner>
-      } @else {
-        <span>Save</span>
-      }
+      @if(isSaving){ <mat-spinner diameter="20"></mat-spinner> }
+      @else { <span>Save</span> }
     </button>
   </mat-dialog-actions>
 </form>

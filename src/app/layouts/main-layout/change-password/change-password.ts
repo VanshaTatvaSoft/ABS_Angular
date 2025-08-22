@@ -2,9 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
-import { LoaderService } from '../../../core/services/loader-service/loader-service';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -56,25 +54,17 @@ export class ChangePassword {
     return this.changePasswordForm.get('currentPassword') as FormControl;
   }
 
-  close(): void {
-    this.dialogRef.close(false);
-  }
+  close = (): void => this.dialogRef.close(false);
 
   submit(): void{
-    console.log(this.changePasswordForm.value);
     if(this.changePasswordForm.invalid) return;
 
     this.authService.changePasswordPost(this.changePasswordForm.value).subscribe({
       next: (res) => {
-        if(res.success){
-          this.toastService.showSuccess(res.message || 'Password changed successfully');
-          this.dialogRef.close(true);
-        }
-        else{
-          this.toastService.showError(res.message || 'Error changing password');
-        }
+        this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Password changed successfully' : 'Error changing password'));
+        if(res.success) this.dialogRef.close(true);
       },
-      error: (res) => {
+      error: () => {
         this.toastService.showError('Something went wrong');
         this.dialogRef.close(true);
       }

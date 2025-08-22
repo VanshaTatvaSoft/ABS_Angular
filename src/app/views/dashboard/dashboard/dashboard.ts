@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CustomInput } from '../../../shared/components/custom-input/custom-input';
 import { DASHBOARDOPTIONS } from '../../../shared/constants/dashboard-options.constant';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { DashboardCard } from '../../../shared/components/dashboard-card/dashboard-card';
 import { SignalrService } from '../../../core/services/signalr-service/signalr-service';
-
+import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 Chart.register(...registerables);
 
 @Component({
@@ -23,7 +23,7 @@ export class Dashboard implements OnInit {
   revenueChart: Chart | null = null;
   serviceChart: Chart | null = null;
 
-  constructor(private fb: FormBuilder, private dashboardService: DashboardService, private signalrService: SignalrService){
+  constructor(private fb: FormBuilder, private dashboardService: DashboardService, private signalrService: SignalrService, private toastService: SweetToastService){
     this.dashboardForm = this.fb.group({
       dashboardOption: ['-1']
     })
@@ -32,22 +32,11 @@ export class Dashboard implements OnInit {
 
   ngOnInit(): void {
     this.signalrService.startConnection();
-
-    this.signalrService.dashboardUpdated = (msg) => {
-      console.log('appointment booked');
-      this.loadDashboardData(this.dashboardOptionControl.value);
-    }
-
-    this.dashboardOptionControl.valueChanges.subscribe((value) => {
-      // console.log('Selected Option:', value);
-      this.loadDashboardData(value);
-    });
+    this.signalrService.dashboardUpdated = (msg) => { this.loadDashboardData(this.dashboardOptionControl.value); }
+    this.dashboardOptionControl.valueChanges.subscribe((value) => { this.loadDashboardData(value); });
   }
 
-  valuechange(newOption: string): void {
-    // console.log('Selected Option:', newOption);
-    this.loadDashboardData(newOption);
-  }
+  valuechange = (newOption: string): void => this.loadDashboardData(newOption);
 
   loadDashboardData(option: string): void {
     this.dashboardService.getDashboardData(option).subscribe({
@@ -56,12 +45,9 @@ export class Dashboard implements OnInit {
           this.dashboardData = res;
           this.renderRevenueChart(res.revenues);
           this.renderServiceChart(res.appointmentServices);
-          // console.log('Dashboard Data:', res);
         }
       },
-      error: (err) => {
-        console.error('Error fetching dashboard data:', err);
-      }
+      error: (err) => this.toastService.showError('Error fetching dashboard data.')
     });
   }
 

@@ -3,41 +3,6 @@
 </div>
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-  <!-- user email -->
-  <!-- <app-custom-input
-    formControlName="email"
-    [customInput]="{
-      appearance: 'outline',
-      label: 'Email',
-      type: 'email',
-      placeholder: 'Enter Email',
-      value: '',
-      id: 'userEmail',
-      name: 'userEmail',
-      disabled: false
-    }"
-    [formControl]="emailControl"
-    [customErrors]="{
-      notFound: 'There is no such user'
-    }">
-  </app-custom-input> -->
-
-  <!-- password -->
-  <!-- <app-custom-input
-    formControlName="password"
-    [customInput]="{
-    appearance: 'outline',
-    label: 'Password',
-    type: 'password',
-    placeholder: 'Enter Password',
-    value: '',
-    id: 'password',
-    name: 'password',
-    disabled: false
-  }"
-  [formControl]="passwordControl">
-  </app-custom-input> -->
-
   <lib-generic-input
   [config]="{
     appearance: 'outline',

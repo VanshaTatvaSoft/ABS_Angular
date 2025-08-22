@@ -13,10 +13,11 @@ import { Notification } from '../../core/models/notification.interface';
 import Swal from 'sweetalert2';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { ChangePassword } from './change-password/change-password';
+import { SideBar } from './side-bar/side-bar';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive, Loader],
+  imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive, Loader, SideBar],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })
@@ -29,26 +30,21 @@ export class MainLayout implements OnInit {
   sidebarCollapse: boolean = false;
 
   constructor( private authService: AuthService, private toastService: SweetToastService, private router: Router, private loaderService: LoaderService, private dialog: MatDialog, private myScheduleService: MyScheduleService, private signalrService: SignalrService){
-    this.userName = authService.getUserName();
     this.userRole = authService.getUserRole();
-    this.authService.userImage$.subscribe(url => {
-      this.userImg = url;
-    });
-    // this.userImg = authService.getUserImage();
+    this.authService.userImage$.subscribe(url => { this.userImg = url; });
+    this.authService.userName$.subscribe(name => this.userName = name);
     this.loaderService.loading$.subscribe(val => this.isLoading = val);
   }
 
   ngOnInit(): void {
     this.loadNotifications();
     this.signalrService.startConnection();
-    this.signalrService.notificationOccur = (msg) => {
-      this.loadNotifications();
-    }
+    this.signalrService.notificationOccur = (msg) => { this.loadNotifications(); }
   }
 
   logout(): void {
     this.authService.logout().subscribe({
-      next: (res) => {
+      next: () => {
         this.toastService.showSuccess('Logged out successfully.');
         this.authService.clearUserState();
         this.router.navigate(['/login']);
@@ -96,7 +92,7 @@ export class MainLayout implements OnInit {
     }
   }
 
-  formatTimeAgo(date: string): string {
+  formatTimeAgo (date: string): string {
     return formatTimeAgo(date);
   }
 
@@ -114,13 +110,8 @@ export class MainLayout implements OnInit {
       if (result.isConfirmed) {
         this.myScheduleService.markAsRead(notificationId).subscribe({
           next: (res) => {
-            if(!res){
-              this.toastService.showError('Error occured');
-            }
-            else{
-              this.loadNotifications();
-              this.toastService.showSuccess('Notification marked as read');
-            }
+            this.toastService[res ? 'showSuccess' : 'showError'](res ? 'Notification marked as read' : 'Error occured');
+            if(res) this.loadNotifications();
           }
         });
       }
@@ -129,10 +120,7 @@ export class MainLayout implements OnInit {
 
   markAllAsRead(): void {
     if (this.notifications.length === 0) return;
-
-    const unreadIds = this.notifications
-      .filter(n => !n.isRead)
-      .map(n => n.notificationId);
+    const unreadIds = this.notifications.filter(n => !n.isRead).map(n => n.notificationId);
 
     if (unreadIds.length === 0) {
       this.toastService.showInfo('No unread notifications');
@@ -151,12 +139,8 @@ export class MainLayout implements OnInit {
       if (result.isConfirmed) {
         this.myScheduleService.markAllAsRead(unreadIds).subscribe({
           next: (res) => {
-            if (!res) {
-              this.toastService.showError('Something went wrong.');
-            } else {
-              this.toastService.showSuccess('All notifications marked as read.');
-              this.loadNotifications(); // Refresh list
-            }
+            this.toastService[res ? 'showSuccess' : 'showError'](res ? 'All notifications marked as read.' : 'Something went wrong.');
+            if(res) this.loadNotifications();
           },
           error: () => this.toastService.showError('API error occurred')
         });
