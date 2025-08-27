@@ -2,7 +2,7 @@ export interface EditProviderViewModel {
   providerId: number;
   email: string | null;
   name: string;
-  phoneNo: number;
+  phoneNo: string;
   providerAvailabilityId: number;
   isRecurring: boolean;
   isAvailable: boolean;

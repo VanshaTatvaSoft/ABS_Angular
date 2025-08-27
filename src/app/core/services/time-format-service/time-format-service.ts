@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class TimeFormatService {
-  transform(value: string, mode: 'short' | '24hr' | '12hr' | 'full' | 'min'): string {
+  transform(value: string, mode: 'short' | '24hr' | '12hr' | 'full' | 'min' | 'hour'): string {
     if (!value) return '';
 
     switch (mode) {
@@ -12,6 +12,14 @@ export class TimeFormatService {
         const [hours, minutes] = value.split(':').map(Number);
         const totalMinutes = hours * 60 + minutes;
         return `${totalMinutes}`;
+
+      case 'hour': {
+        const totalMinutes = parseInt(value, 10);
+        if (isNaN(totalMinutes)) return value;
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+      }
 
       case 'short':
         // "HH:mm:ss" → "HH:mm"

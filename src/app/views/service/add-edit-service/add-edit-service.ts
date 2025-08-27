@@ -9,6 +9,9 @@ import { SweetToastService } from '../../../core/services/toast/sweet-toast.serv
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 import { GenericInput } from '@vanshasomani/generic-input';
+import { timeNotZeroValidator } from '../../../shared/validators/duration-not-zero.validator';
+import { ServiceFormConfig } from './add-edit-service.helper';
+import { TimeFormatService } from '../../../core/services/time-format-service/time-format-service';
 
 @Component({
   selector: 'app-add-edit-service',
@@ -19,37 +22,34 @@ import { GenericInput } from '@vanshasomani/generic-input';
 export class AddEditService {
   serviceForm: FormGroup;
   isSaving = false;
+  serviceFormConfig = ServiceFormConfig;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AddEditService>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceApi: ServiceApi,
-    private toastService: SweetToastService
+    private toastService: SweetToastService,
+    private timeFormatService: TimeFormatService
   ) {
+    data = {
+      ...data,
+      price: data?.price ? Number(String(data.price).replace(/[₹,]/g, '')) : null,
+      commission: data?.commission ? Number(String(data.commission).replace('%', '')) : null,
+      duration: data?.duration ? this.timeFormatService.transform(String(data.duration).replace(' min', ''), 'hour') : null
+    }
     this.serviceForm = this.fb.group({
       serviceId: [data?.serviceId ?? null],
       serviceName: [data?.serviceName ?? '', Validators.required],
       serviceDesc: [data?.serviceDesc ?? '', Validators.required],
       price: [data?.price ?? '', [Validators.required, Validators.min(1)]],
-      duration: [data?.duration ?? '', [Validators.required]],
+      commission: [data?.commission ?? '', [Validators.required, Validators.min(1), Validators.max(100)]],
+      duration: [data?.duration ?? '', [Validators.required, timeNotZeroValidator()]],
     });
   }
 
-  get serviceNameControll(): FormControl {
-    return this.serviceForm.get('serviceName') as FormControl;
-  }
-
-  get serviceDescControll(): FormControl {
-    return this.serviceForm.get('serviceDesc') as FormControl;
-  }
-
-  get priceControll(): FormControl {
-    return this.serviceForm.get('price') as FormControl;
-  }
-
-  get durationControll(): FormControl {
-    return this.serviceForm.get('duration') as FormControl;
+  getControl(name: string): FormControl {
+    return this.serviceForm.get(name) as FormControl;
   }
 
   save() {
@@ -65,7 +65,6 @@ export class AddEditService {
 
     action$.subscribe({
       next: (res) => {
-        debugger
         this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Service saved successfully' : 'Something went wrong'));
         if(res.success) this.dialogRef.close(true);
       },

@@ -31,16 +31,8 @@ export class AddProvider {
     })
   }
 
-  get providerNameControl() : FormControl{
-    return this.addProviderForm.get('providerName') as FormControl;
-  }
-
-  get providerEmailControl() : FormControl{
-    return this.addProviderForm.get('providerEmail') as FormControl;
-  }
-
-  get providerPhoneNoControl() : FormControl{
-    return this.addProviderForm.get('phoneNo') as FormControl;
+  getControl(name: string): FormControl {
+    return this.addProviderForm.get(name) as FormControl;
   }
 
   submit(): void{
@@ -56,8 +48,6 @@ export class AddProvider {
     });
   }
 
-  cancel() {
-    this.dialogRef.close(null);
-  }
+  cancel = () => this.dialogRef.close(null);
 
 }

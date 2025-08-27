@@ -1,0 +1,61 @@
+<h1 mat-dialog-title class="ps-3 pt-2">My Earning</h1>
+
+<form [formGroup]="myEarningForm" class="profile-form">
+  <mat-dialog-content style="height: 230px;">
+
+    <!-- Drop down -->
+    <div class="row">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Select Range</mat-label>
+        <mat-select formControlName="filter">
+          @for (option of options; track option) {
+            <mat-option [value]="option.value">{{option.viewValue}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <input type="date" class="form-control" id="startDate" placeholder="" formControlName="startDate"
+          [ngClass]="{'is-invalid': this.myEarningForm.get('startDate')?.invalid && this.myEarningForm.get('startDate')?.touched}">
+          <label for="startDate">Start Date</label>
+          <div>
+            @if(this.myEarningForm.get('startDate')?.invalid && this.myEarningForm.get('startDate')?.touched && this.myEarningForm.get('startDate')?.hasError('required')){
+              <span class="text-danger fs-6">Start date is required</span>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-floating mb-3">
+          <input type="date" class="form-control" id="endDate" placeholder="" formControlName="endDate"
+          [ngClass]="{'is-invalid': this.myEarningForm.get('endDate')?.invalid && this.myEarningForm.get('endDate')?.touched}">
+          <label for="endDate">End Date</label>
+          <div>
+            @if(this.myEarningForm.get('endDate')?.invalid && this.myEarningForm.get('endDate')?.touched && this.myEarningForm.get('endDate')?.hasError('required')){
+              <span class="text-danger fs-6">End date is required</span>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      @if(myEarningForm.errors?.['sameDate']){
+        <span class="text-danger fs-6">Start and End date cannot be same</span>
+      }
+      @if(myEarningForm.errors?.['startAfterEnd']){
+        <span class="text-danger fs-6">Start date cannot be greater then end date</span>
+      }
+    </div>
+    <div class="amount-display mt-1">
+      <strong>Amount Earned:</strong> ₹{{ amountEarned }}
+    </div>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="close()">Close</button>
+  </mat-dialog-actions>
+</form>

@@ -7,106 +7,32 @@
   <!-- Name -->
   <div class="row">
     <div class="col-12">
-      <lib-generic-input
-        class="form-floating mb-3"
-        [config]="{
-          appearance: 'outline',
-          label: 'Name',
-          type: 'text',
-          class: 'w-100',
-          placeholder: 'Enter Name',
-          id: 'name',
-          name: 'name',
-          icon: 'person',
-          customErrorMessages: {
-            required: 'Name is required'
-          }
-        }"
-        [formControl]="nameControl">
-      </lib-generic-input>
+      <lib-generic-input class="form-floating mb-3" [config]="registerFormConfig.name" [formControl]="getControl('name')"></lib-generic-input>
     </div>
   </div>
 
   <!-- Email -->
   <div class="row">
     <div class="col-12">
-      <lib-generic-input
-        class="form-floating mb-3"
-        [config]="{
-          appearance: 'outline',
-          label: 'Email',
-          type: 'email',
-          class: 'w-100',
-          placeholder: 'Enter Email',
-          id: 'email',
-          name: 'email',
-          icon: 'email',
-          customErrorMessages: {
-            required: 'Email is required',
-            email: 'Enter a valid email address'
-          }
-        }"
-        [formControl]="emailControl">
-      </lib-generic-input>
+      <lib-generic-input class="form-floating mb-3" [config]="registerFormConfig.email" [formControl]="getControl('email')"></lib-generic-input>
     </div>
   </div>
 
   <!-- Password -->
   <div class="row">
     <div class="col-12">
-      <lib-generic-input
-        class="form-floating input-countainer mb-3"
-        [config]="{
-          appearance: 'outline',
-          label: 'Password',
-          type: 'password',
-          class: 'w-100',
-          placeholder: 'Enter Password',
-          id: 'password',
-          name: 'password',
-          customErrorMessages: {
-            required: 'Password is required',
-            noUpperCase: 'Must contain at least 1 uppercase letter',
-            noLowerCase: 'Must contain at least 1 lowercase letter',
-            noSpecialChar: 'Must contain at least 1 special character',
-            tooShort: 'Must be at least 8 characters long'
-          }
-        }"
-        [formControl]="passwordControl">
-      </lib-generic-input>
+      <lib-generic-input class="form-floating input-countainer mb-3" [config]="registerFormConfig.password" [formControl]="getControl('password')"></lib-generic-input>
     </div>
   </div>
 
   <!-- Confirm Password -->
   <div class="row">
     <div class="col-12">
-      <lib-generic-input
-        class="form-floating input-countainer mb-3"
-        formControlName="confirmPassword"
-        [formControl]="confirmPasswordControl"
-        [config]="{
-          appearance: 'outline',
-          label: 'Confirm Password',
-          type: 'password',
-          placeholder: 'Confirm Password',
-          id: 'confirmPassword',
-          name: 'confirmPassword',
-          class: 'w-100',
-          disabled: false,
-          customErrorMessages: {
-            required: 'Confirm Password is required',
-            passwordsMismatch: 'Password and Confirm Password must match',
-            noUpperCase: 'Must contain at least 1 uppercase letter',
-            noLowerCase: 'Must contain at least 1 lowercase letter',
-            noSpecialChar: 'Must contain at least 1 special character',
-            tooShort: 'Must be at least 8 characters long'
-          }
-        }">
-      </lib-generic-input>
-      @if(registerForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !registerForm.get('confirmPassword')?.errors?.['required']){
-        <div class="text-danger">
+      <lib-generic-input class="form-floating input-countainer mb-3" formControlName="confirmPassword" [formControl]="getControl('confirmPassword')" [config]="registerFormConfig.confirmPassword"></lib-generic-input>
+      @if(registerForm.hasError('passwordsMismatch') && getControl('confirmPassword').touched && !registerForm.get('confirmPassword')?.errors?.['required']){
+        <mat-error class="text-danger fs-8 ms-3">
           Password and Confirm Password must match
-        </div>
+        </mat-error>
       }
     </div>
   </div>
@@ -115,62 +41,12 @@
 
     <!-- Phone No -->
     <div class="col-6">
-      <lib-generic-input
-        formControlName="phoneNo"
-        [formControl]="phoneNoControl"
-        [config]="{
-          appearance: 'outline',
-          label: 'Phone No',
-          type: 'text',
-          placeholder: 'Enter Phone No',
-          id: 'phoneNo',
-          name: 'phoneNo',
-          disabled: false,
-          icon: 'phone',
-          customErrorMessages: {
-            required: 'Phone No is required',
-            invalidPhone: 'Enter a valid phone number',
-            invalidLength: 'Phone number must be 10 digits long'
-          },
-          class: 'w-100'
-        }">
-      </lib-generic-input>
+      <lib-generic-input formControlName="phoneNo" [formControl]="getControl('phoneNo')" [config]="registerFormConfig.phoneNo"></lib-generic-input>
     </div>
 
+    <!-- Role -->
     <div class="col-6">
-      <!-- Role select list -->
-      <!-- <app-custom-input
-      formControlName="role"
-      [customInput]="{
-        appearance: 'outline',
-        label: 'Role',
-        type: 'select',
-        placeholder: '',
-        id: 'role',
-        name: 'role',
-        disabled: false,
-        options:roles
-      }"
-      [formControl]="roleControl">
-      </app-custom-input> -->
-      <lib-generic-input
-        formControlName="role"
-        [formControl]="roleControl"
-        [config]="{
-          appearance: 'outline',
-          label: 'Role',
-          type: 'select',
-          placeholder: '',
-          id: 'role',
-          name: 'role',
-          disabled: false,
-          options:roles,
-          icon: 'settings',
-          value: '',
-          class: 'w-100'
-        }"
-      >
-      </lib-generic-input>
+      <lib-generic-input formControlName="role" [formControl]="getControl('role')" [config]="registerFormConfig.role"></lib-generic-input>
     </div>
   </div>
 

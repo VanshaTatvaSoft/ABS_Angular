@@ -15,5 +15,7 @@ export const ServiceColumnHeader = [
   { key: 'serviceDesc', header: 'Description', sortable: false },
   { key: 'duration', header: 'Duration', sortable: true },
   { key: 'price', header: 'Price', sortable: true },
+  { key: 'commission', header: 'Commission', sortable: true },
+  { key: 'earningByService', header: 'Earning', sortable: true },
   { key: 'count', header: 'Provided Count', sortable: true },
 ]

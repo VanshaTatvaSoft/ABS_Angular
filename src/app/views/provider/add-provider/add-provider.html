@@ -1,11 +1,15 @@
 <h2 mat-dialog-title class="ms-3 pb-0">Add Provider</h2>
 <form [formGroup]="addProviderForm" (ngSubmit)="submit()">
   <mat-dialog-content>
-    <lib-generic-input [formControl]="providerNameControl" [config]="addProviderFormConfig.providerName"></lib-generic-input>
 
-    <lib-generic-input [formControl]="providerEmailControl" [config]="addProviderFormConfig.providerEmail"></lib-generic-input>
+    <!-- provider name -->
+    <lib-generic-input [formControl]="getControl('providerName')" [config]="addProviderFormConfig.providerName"></lib-generic-input>
 
-    <lib-generic-input [formControl]="providerPhoneNoControl" [config]="addProviderFormConfig.phoneNo"></lib-generic-input>
+    <!-- provider email -->
+    <lib-generic-input [formControl]="getControl('providerEmail')" [config]="addProviderFormConfig.providerEmail"></lib-generic-input>
+
+    <!-- provider phone no -->
+    <lib-generic-input [formControl]="getControl('phoneNo')" [config]="addProviderFormConfig.phoneNo"></lib-generic-input>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">

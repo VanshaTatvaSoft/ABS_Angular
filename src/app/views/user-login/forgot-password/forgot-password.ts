@@ -21,8 +21,8 @@ export class ForgotPassword {
     });
   }
 
-  get emailControl(): FormControl {
-    return this.forgotPassowrdForm.get('email') as FormControl;
+  getControl(name: string): FormControl {
+    return this.forgotPassowrdForm.get(name) as FormControl;
   }
 
   onSubmit(): void{

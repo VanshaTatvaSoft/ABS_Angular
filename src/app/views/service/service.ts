@@ -6,7 +6,7 @@ import { GenericTable } from '../../shared/components/generic-table/generic-tabl
 import { MatButtonModule } from '@angular/material/button';
 import { Sort } from '@angular/material/sort';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, min } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,10 +15,13 @@ import { SweetToastService } from '../../core/services/toast/sweet-toast.service
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
 import { DeleteServiceSwalConfig, ServiceColumnHeader,  } from './service-helper';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
+import { MatIconModule } from '@angular/material/icon';
+import { TimeFormatService } from '../../core/services/time-format-service/time-format-service';
 
 @Component({
   selector: 'app-service',
-  imports: [CommonModule, GenericTable, MatButtonModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule, FormsModule],
+  imports: [CommonModule, GenericTable, MatButtonModule, ReactiveFormsModule, MatInputModule, MatFormFieldModule, FormsModule, MatIconModule],
   templateUrl: './service.html',
   styleUrl: './service.css'
 })
@@ -33,7 +36,7 @@ export class Service implements OnInit {
   sortDirection = 'asc';
   searchString = '';
 
-  constructor(private serviceApi: ServiceApi, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService) {}
+  constructor(private serviceApi: ServiceApi, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService, private timeFormatService: TimeFormatService) {}
 
   ngOnInit(): void {
     this.searchControl.valueChanges
@@ -48,7 +51,13 @@ export class Service implements OnInit {
 
   fetchData() {
     this.serviceApi.getServices(this.searchString, this.page, this.pageSize, this.sort, this.sortDirection).subscribe((res) => {
-      this.services = res.serviceList;
+      this.services = res.serviceList.map(s => ({
+        ...s,
+        price: `₹${s.price}`,
+        commission: `${s.commission}%`,
+        earningByService: `₹${s.earningByService}`,
+        duration: `${this.timeFormatService.transform(s.duration, 'min')} min`
+      }));
       this.totalCount = res.servicePagination.totalRecord;
     });
   }
@@ -78,22 +87,13 @@ export class Service implements OnInit {
       if(confirmed){
         this.serviceApi.deleteService(row.serviceId).subscribe({
           next: (res) => this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Service delted successfully' : 'Error deleting service')),
-          error: (err) => this.toastService.showError('Something went wrong'),
+          error: () => this.toastService.showError('Something went wrong'),
         })
       }
     })
   }
 
   openAddEditServiceDialog(service?: ServiceInfo) {
-    const dialogRef = this.dialog.open(AddEditService, {
-      width: '400px',
-      data: service ? { ...service } : {}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if(result){
-        this.fetchData();
-      }
-    });
+    openDailog(this.dialog, AddEditService, '500px', service ? {...service} : {}).subscribe(result => result ? this.fetchData() : null);
   }
 }

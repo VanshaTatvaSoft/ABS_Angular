@@ -24,6 +24,7 @@ import { LoaderService } from '../../core/services/loader-service/loader-service
 import { Router } from '@angular/router';
 import { bookAppointmentColumnHeader, BookingFormConfig, buildBookingForm, extractBookingFormValues } from './book-appointment.helper';
 import { GenericInput } from '@vanshasomani/generic-input';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
 
 @Component({
   selector: 'app-book-appointment',
@@ -72,20 +73,8 @@ export class BookAppointment {
     });
   }
 
-  get clientNameControl() : FormControl{
-    return this.bookingForm.get('clientName') as FormControl;
-  }
-  get clientPhoneNoControl() : FormControl{
-    return this.bookingForm.get('clientPhoneNo') as FormControl;
-  }
-  get appointmentDateControl() : FormControl{
-    return this.bookingForm.get('appointmentDate') as FormControl;
-  }
-  get startTimeControl() : FormControl{
-    return this.bookingForm.get('startTime') as FormControl;
-  }
-  get endTimeControl() : FormControl{
-    return this.bookingForm.get('endTime') as FormControl;
+  getControl(name: string): FormControl {
+    return this.bookingForm.get(name) as FormControl;
   }
 
   searchProvider(){
@@ -106,20 +95,8 @@ export class BookAppointment {
       this.bookingService.getAvailableSlots(appointmentDate, startTime, endTime, serviceId, providerId).subscribe({
         next: (res) => {
           this.availableSlots = res;
-          const dialogRef = this.dialog.open(SelectSlot, {
-            width: '500px',
-            maxHeight: '90vh',
-            disableClose: true,
-            autoFocus: false,
-            panelClass: 'custom-dialog-class',
-            data: {availableSlot: this.availableSlots, providerId: this.providerId, appointmentDate: appointmentDate, startTime: startTime, endTime: endTime, serviceId: serviceId}
-          });
-
-          dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-              this.selectedSlot = result;
-            }
-          });
+          let slotData = {availableSlot: this.availableSlots, providerId: this.providerId, appointmentDate: appointmentDate, startTime: startTime, endTime: endTime, serviceId: serviceId};
+          openDailog(this.dialog, SelectSlot, '500px', slotData, '90vh').subscribe(result => result ? this.selectedSlot = result : null);
         }
       });
     }
@@ -130,11 +107,11 @@ export class BookAppointment {
     this.selectedSlot = null;
     this.data!.providerList = [];
     this.bookingForm.reset();
+    this.bookingForm = buildBookingForm(this.fb, this.data, this.timeFormatService);
   }
 
   submit(){
     if (this.bookingForm.invalid || !this.providerId || !this.selectedSlot) {
-      console.log(this.bookingForm);
       this.toastService.showError('Please complete the form and select a slot.');
       return;
     }

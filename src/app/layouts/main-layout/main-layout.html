@@ -3,7 +3,7 @@
 }
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
   <div class="app-wrapper">
-    <nav class="app-header navbar navbar-expand bg-body">
+    <nav class="app-header navbar navbar-expand bg-body" style="z-index: 1000 !important;">
       <div class="container-fluid">
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -15,7 +15,7 @@
         <ul class="navbar-nav ms-auto">
           @if(this.userRole == 'provider'){
             <li class="nav-item dropdown" id="notificationIconBell">
-              <a class="nav-link text-dark" data-bs-toggle="dropdown">
+              <a class="nav-link text-dark cursor-pointer" data-bs-toggle="dropdown">
                 <i class="bi bi-bell-fill fs-5"></i>
                 <span class="navbar-badge badge fs-8 text-bg-warning" id="notificationCount">{{ notifications.length }}</span>
               </a>
@@ -43,8 +43,8 @@
               </div>
             </li>
           }
-          <li class="nav-item dropdown user-menu">
-            <a class="nav-link dropdown-toggle text-dark py-0" data-bs-toggle="dropdown" >
+          <li class="nav-item dropdown user-menu" data-bs-auto-close="outside">
+            <a class="nav-link dropdown-toggle text-dark py-0 cursor-pointer" data-bs-toggle="dropdown" >
               <span class="d-md-inline">
                 @if (userImg) {
                   <img [src]="userImg" alt="Profile" style="max-width: 35px; border-radius: 50%; height: 35px;">
@@ -84,13 +84,23 @@
                     </button>
                   </div>
                 </div>
+                @if(this.userRole == 'provider'){
+                  <div class="d-flex justify-content-center align-items-center mt-2" >
+                    <div class="w-100">
+                      <button class="btn btn-info w-100" (click)="myEarningClicked()">
+                        <i class="bi bi-cash-stack"></i>
+                        My Earning
+                      </button>
+                    </div>
+                  </div>
+                }
               </li>
             </ul>
           </li>
         </ul>
       </div>
     </nav>
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" [ngClass]="{ 'd-none': sidebarCollapse }">
+    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark" [ngClass]="{ 'd-none': sidebarCollapse }" style="z-index: 1000 !important;">
       <app-side-bar></app-side-bar>
     </aside>
     <main class="app-main" style="background-color: #dde0e4;;">

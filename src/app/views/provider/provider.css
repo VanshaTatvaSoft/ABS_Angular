@@ -1,0 +1,4 @@
+::ng-deep .mdc-tab--active {
+  background-color: aliceblue;
+  --mat-tab-animation-duration: 500ms;
+}

@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { cancelAppointmentSwalConfig, checkCancelAppointment, myBookingColumnHeader } from './my-booking.helper';
 import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
 
 @Component({
   selector: 'app-my-bookings',
@@ -72,20 +73,10 @@ export class MyBookings implements OnInit {
       this.toastService.showError('You can not reschedule appointment now.');
       return;
     }
-    const parts = appointmentDate.split('/'); // ['dd', 'MM', 'yyyy']
-    const parsedDate = new Date(+parts[2], +parts[1] - 1, +parts[0]); // Create valid Date object
-    appointmentDate = formatDate(parsedDate, 'yyyy-MM-dd', 'en-IN'); // Convert to 'yyyy-MM-dd' format using formatDate
+    const [day, month, year] = appointmentDate.split('/'); // ['dd', 'MM', 'yyyy']
+    appointmentDate = formatDate(new Date(+year, +month - 1, +day), 'yyyy-MM-dd', 'en-IN'); // Convert to 'yyyy-MM-dd' format using formatDate
     appointmentStartTime = this.timeFormatService.transform(appointmentStartTime , '24hr');
-
-    const dialogRef = this.dialog.open(RescheduleAppointment, {
-      width: '500px',
-      maxHeight: '90vh',
-      disableClose: true,
-      autoFocus: false,
-      data: { appointmentId, appointmentDate}
-    });
-
-    dialogRef.afterClosed().subscribe(result => { if (result) this.loadData(); });
+    openDailog(this.dialog, RescheduleAppointment, '500px', { appointmentId, appointmentDate}, '90vh').subscribe(result => result ? this.loadData() : null);
   }
 
 }

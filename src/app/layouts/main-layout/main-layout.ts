@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { SweetToastService } from '../../core/services/toast/sweet-toast.service';
 import { CommonModule } from '@angular/common';
@@ -10,14 +10,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MyScheduleService } from '../../core/services/my-schedule-services/my-schedule-service';
 import { formatTimeAgo } from '../../core/services/notification-time/time-ago.util';
 import { Notification } from '../../core/models/notification.interface';
-import Swal from 'sweetalert2';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { ChangePassword } from './change-password/change-password';
 import { SideBar } from './side-bar/side-bar';
+import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
+import { MarkAllAsReadConfirmationDailog, MarkNotificationAsReadConfirmationDailog } from './main-layout.helper';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
+import { MyEarning } from './my-earning/my-earning';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, RouterLink, CommonModule, RouterLinkActive, Loader, SideBar],
+  imports: [RouterOutlet, CommonModule, Loader, SideBar],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })
@@ -29,10 +32,11 @@ export class MainLayout implements OnInit {
   notifications: Notification[] = [];
   sidebarCollapse: boolean = false;
 
-  constructor( private authService: AuthService, private toastService: SweetToastService, private router: Router, private loaderService: LoaderService, private dialog: MatDialog, private myScheduleService: MyScheduleService, private signalrService: SignalrService){
+  constructor( private authService: AuthService, private toastService: SweetToastService, private router: Router, private loaderService: LoaderService, private dialog: MatDialog, private myScheduleService: MyScheduleService, private signalrService: SignalrService, private confirmDailogService: ConfirmationService){
     this.userRole = authService.getUserRole();
+    this.userName = authService.getUserName();
     this.authService.userImage$.subscribe(url => { this.userImg = url; });
-    this.authService.userName$.subscribe(name => this.userName = name);
+    this.authService.userName$.subscribe(name => { this.userName = name; });
     this.loaderService.loading$.subscribe(val => this.isLoading = val);
   }
 
@@ -57,31 +61,15 @@ export class MainLayout implements OnInit {
   }
 
   myProfileClicked(): void{
-    const dialogRef = this.dialog.open(MyProfile, {
-      width: '500px',
-      disableClose: true,     // ✅ Prevents closing via outside click
-      autoFocus: false,       // Optional: prevent auto focus on first input
-      data: {}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-      }
-    });
+    openDailog(this.dialog, MyProfile, '500px', {}, '').subscribe();
   }
 
   changePasswordClicked(): void{
-    const dialogRef = this.dialog.open(ChangePassword, {
-      width: '500px',
-      disableClose: true,
-      autoFocus: false,
-      data: {}
-    });
+    openDailog(this.dialog, ChangePassword, '500px', {}, '').subscribe();
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-      }
-    });
+  myEarningClicked(): void{
+    openDailog(this.dialog, MyEarning, '600px', {}, '').subscribe();
   }
 
   loadNotifications(): void {
@@ -97,17 +85,8 @@ export class MainLayout implements OnInit {
   }
 
   markAsRead(notificationId: number): void {
-    console.log('Mark single notification as read:', notificationId);
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You want to mark this appointment as read",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes"
-    }).then((result) => {
-      if (result.isConfirmed) {
+    this.confirmDailogService.confirm(MarkNotificationAsReadConfirmationDailog).then(confirmed => {
+      if(confirmed){
         this.myScheduleService.markAsRead(notificationId).subscribe({
           next: (res) => {
             this.toastService[res ? 'showSuccess' : 'showError'](res ? 'Notification marked as read' : 'Error occured');
@@ -115,7 +94,7 @@ export class MainLayout implements OnInit {
           }
         });
       }
-    });
+    })
   }
 
   markAllAsRead(): void {
@@ -127,16 +106,8 @@ export class MainLayout implements OnInit {
       return;
     }
 
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You want to mark all notifications as read?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes"
-    }).then((result) => {
-      if (result.isConfirmed) {
+    this.confirmDailogService.confirm(MarkAllAsReadConfirmationDailog).then(confirmed => {
+      if(confirmed){
         this.myScheduleService.markAllAsRead(unreadIds).subscribe({
           next: (res) => {
             this.toastService[res ? 'showSuccess' : 'showError'](res ? 'All notifications marked as read.' : 'Something went wrong.');
@@ -145,7 +116,7 @@ export class MainLayout implements OnInit {
           error: () => this.toastService.showError('API error occurred')
         });
       }
-    });
+    })
   }
 
 }

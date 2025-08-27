@@ -20,7 +20,7 @@ import { TimeRangeValidator } from '../../../shared/validators/start-end-time.va
 
 @Component({
   selector: 'app-my-profile',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogActions, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatSlideToggleModule, GenericInput, MatIcon, NgxMaterialTimepickerModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogActions, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatSlideToggleModule, MatIcon, NgxMaterialTimepickerModule],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css'
 })
@@ -36,16 +36,13 @@ export class MyProfile implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: {},
     private fb: FormBuilder,
     private toastService: SweetToastService,
-    private loaderService: LoaderService,
     private authService: AuthService,
-    private router: Router,
     private timeFormatService: TimeFormatService
   ) {}
 
   ngOnInit(): void {
     this.authService.myProfileGet().subscribe({
       next: (res) => {
-        console.log("res - ", res);
         this.canNotEdit = res.canNotEditTime;
         this.myProfileForm = this.fb.group({
           userId: [res.userId],
@@ -100,6 +97,9 @@ export class MyProfile implements OnInit {
   get phoneNoControl(): FormControl {
     return this.myProfileForm.get('phoneNo') as FormControl;
   }
+  getControll(name: string): FormControl {
+    return this.myProfileForm.get(name) as FormControl;
+  }
 
   close(): void {
     this.dialogRef.close(false);
@@ -108,7 +108,6 @@ export class MyProfile implements OnInit {
   submit(): void{
     if(this.myProfileForm.invalid) return;
     const formValue = this.myProfileForm.getRawValue();
-    debugger
     const formattedModel = {
       ...formValue,
       startTime: this.timeFormatService.transform(formValue.startTime, '24hr'),

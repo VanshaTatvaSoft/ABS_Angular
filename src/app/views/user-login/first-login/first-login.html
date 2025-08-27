@@ -12,7 +12,7 @@
               <app-custom-input
                 class="form-floating input-countainer mb-3"
                 formControlName="password"
-                [formControl]="passwordControl"
+                [formControl]="getControl('password')"
                 [customInput]="{
                   appearance: 'outline',
                   label: 'Password',
@@ -43,7 +43,7 @@
               <app-custom-input
                 class="form-floating input-countainer mb-3"
                 formControlName="confirmPassword"
-                [formControl]="confirmPasswordControl"
+                [formControl]="getControl('confirmPassword')"
                 [customInput]="{
                   appearance: 'outline',
                   label: 'Confirm Password',
@@ -63,7 +63,7 @@
                   tooShort: 'Must be at least 8 characters long'
                 }">
               </app-custom-input>
-              @if(firstLoginForm.hasError('passwordsMismatch') && confirmPasswordControl.touched && !firstLoginForm.get('confirmPassword')?.errors?.['required']){
+              @if(firstLoginForm.hasError('passwordsMismatch') && getControl('confirmPassword').touched && !firstLoginForm.get('confirmPassword')?.errors?.['required']){
                 <div class="text-danger">
                   Password and Confirm Password must match
                 </div>

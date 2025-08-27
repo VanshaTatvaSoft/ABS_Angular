@@ -11,9 +11,9 @@ import { TodaysBreakService } from '../../core/services/todays-break-service/tod
 import { TodaysBreakViewModel } from '../../core/models/todays-break.interface';
 import { TimeFormatPipePipe } from '../../core/pipes/time-format-pipe/time-format-pipe-pipe';
 import { SweetToastService } from '../../core/services/toast/sweet-toast.service';
-import Swal from 'sweetalert2';
 import { BreakFormFactoryService } from '../../core/services/break-form-factory-service/break-form-factory-service';
-import { buildBreakPayload } from './todays-break.helper';
+import { buildBreakPayload, DeleteBreakConfirmationDailog } from './todays-break.helper';
+import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
 
 @Component({
   selector: 'app-today-break',
@@ -27,8 +27,9 @@ export class TodayBreak {
   flippedCards: boolean[] = [];
   deletedBreaks: number[] = [];
   originalBreaks: any[] = [];
+  totalTimeWorked!: string;
 
-  constructor(private fb: FormBuilder, private timeFormatService: TimeFormatService, private todaysBreakService: TodaysBreakService, private toastService: SweetToastService, private breakFormFactory: BreakFormFactoryService) {
+  constructor(private fb: FormBuilder, private timeFormatService: TimeFormatService, private todaysBreakService: TodaysBreakService, private toastService: SweetToastService, private breakFormFactory: BreakFormFactoryService, private confirmDailogService: ConfirmationService) {
     this.breakForm = this.fb.group({
       breaks: this.fb.array([])
     });
@@ -47,10 +48,22 @@ export class TodayBreak {
             this.breaks.push(breakGroup);
           })
         }
+        this.calculateWorkingHours();
         this.deletedBreaks = [];
         this.originalBreaks = JSON.parse(JSON.stringify(this.breakForm.getRawValue().breaks));
       }
     })
+  }
+
+  calculateWorkingHours(){
+    let totalShift = parseInt(this.timeFormatService.transform(this.data.dailyEndTime, 'min')) - parseInt(this.timeFormatService.transform(this.data.dailyStartTime, 'min'));
+    let totalBreakTime: number = 0;
+    this.data.breakInfoList.forEach(b => {
+      if(!this.checkCanEdit(this.timeFormatService.transform(b.startTime, '24hr'))){
+        totalBreakTime += (parseInt(this.timeFormatService.transform(b.endTime, 'min')) - parseInt(this.timeFormatService.transform(b.startTime, 'min')));
+      }
+    });
+    this.totalTimeWorked = this.timeFormatService.transform((totalShift - totalBreakTime).toString(), 'hour');
   }
 
   get breaks(): FormArray {
@@ -72,16 +85,8 @@ export class TodayBreak {
 
   deleteBreak(index: number, brk: any) {
     if(brk.value.providerBreakId) {
-      Swal.fire({
-        title: "Are you sure you want to delete this break?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-      }).then((result) => {
-        if (result.isConfirmed) {
+      this.confirmDailogService.confirm(DeleteBreakConfirmationDailog).then(confirmed => {
+        if(confirmed){
           this.deletedBreaks.push(brk.value.providerBreakId);
           this.breaks.removeAt(index);
         }

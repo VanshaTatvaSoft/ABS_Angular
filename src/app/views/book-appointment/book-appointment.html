@@ -14,21 +14,26 @@
         <div class="card-body">
           <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-6">
-              <lib-generic-input [formControl]="clientNameControl" [config]="bookingFormConfig.clientName"></lib-generic-input>
+              <!-- client name -->
+              <lib-generic-input [formControl]="getControl('clientName')" [config]="bookingFormConfig.clientName"></lib-generic-input>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6">
-              <lib-generic-input [formControl]="clientPhoneNoControl" [config]="bookingFormConfig.clientPhoneNo"></lib-generic-input>
+              <!-- client phone no -->
+              <lib-generic-input [formControl]="getControl('clientPhoneNo')" [config]="bookingFormConfig.clientPhoneNo"></lib-generic-input>
             </div>
             <div class="col-lg-4 col-md-12 col-sm-12">
-              <lib-generic-input [formControl]="appointmentDateControl" [config]="bookingFormConfig.appointmentDate"></lib-generic-input>
+              <!-- appointment date -->
+              <lib-generic-input [formControl]="getControl('appointmentDate')" [config]="bookingFormConfig.appointmentDate"></lib-generic-input>
             </div>
           </div>
           <div class="row">
             <div class="col-lg-2">
-              <lib-generic-input [formControl]="startTimeControl" [config]="bookingFormConfig.startTime"></lib-generic-input>
+              <!-- start time -->
+              <lib-generic-input [formControl]="getControl('startTime')" [config]="bookingFormConfig.startTime"></lib-generic-input>
             </div>
             <div class="col-lg-2">
-              <lib-generic-input [formControl]="endTimeControl" [config]="bookingFormConfig.endTime"></lib-generic-input>
+              <!-- end time -->
+              <lib-generic-input [formControl]="getControl('endTime')" [config]="bookingFormConfig.endTime"></lib-generic-input>
             </div>
             <div class="col-lg-4">
               <mat-form-field appearance="outline" class="w-100">
@@ -71,7 +76,7 @@
                 </app-generic-table>
               }
               @else {
-                <div class="d-flex justify-content-center align-items-center">No Providers</div>
+                <!-- <div class="d-flex justify-content-center align-items-center">No Providers</div> -->
               }
             </div>
           </div>

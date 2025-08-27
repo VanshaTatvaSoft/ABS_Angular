@@ -10,6 +10,7 @@ import { JwtService } from '../../../core/services/jwt-service/jwt-service';
 import { PasswordStrengthValidator } from '../../../shared/validators/password-strength.validator';
 import { MatInputModule } from '@angular/material/input';
 import { GenericInput } from '@vanshasomani/generic-input';
+import { ChangePasswordFormConfig } from './change-password.helper';
 
 @Component({
   selector: 'app-change-password',
@@ -19,6 +20,7 @@ import { GenericInput } from '@vanshasomani/generic-input';
 })
 export class ChangePassword {
   changePasswordForm!: FormGroup;
+  changePasswordFormConfig = ChangePasswordFormConfig;
 
   constructor(
     private dialogRef: MatDialogRef<ChangePassword>,
@@ -44,14 +46,8 @@ export class ChangePassword {
     return password === confirmPassword ? null : { passwordsMismatch: true };
   };
 
-  get confirmPasswordControl(): FormControl {
-    return this.changePasswordForm.get('confirmPassword') as FormControl;
-  }
-  get newPasswordControl(): FormControl {
-    return this.changePasswordForm.get('newPassword') as FormControl;
-  }
-  get currentPasswordControl(): FormControl {
-    return this.changePasswordForm.get('currentPassword') as FormControl;
+  getControl(name: string): FormControl {
+    return this.changePasswordForm.get(name) as FormControl;
   }
 
   close = (): void => this.dialogRef.close(false);

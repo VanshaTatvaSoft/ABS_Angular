@@ -3,8 +3,10 @@ export interface ServiceInfo {
   serviceName: string;
   serviceDesc: string;
   duration: string;
-  price: number;
+  price: string;
+  commission: string;
   count: number;
+  earningByService: string;
 }
 
 export interface PaginationInterface {

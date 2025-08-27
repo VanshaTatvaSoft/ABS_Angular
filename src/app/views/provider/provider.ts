@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ProviderModel } from '../../core/models/provider-model.interface';
-import { ServiceApi } from '../../core/services/service/service';
 import { ProviderService } from '../../core/services/provider/provider.service';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { GenericTable } from '../../shared/components/generic-table/generic-table';
 import { debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
 import { Sort } from '@angular/material/sort';
@@ -17,36 +16,27 @@ import { SweetToastService } from '../../core/services/toast/sweet-toast.service
 import { EditProvider } from './edit-provider/edit-provider';
 import { SignalrService } from '../../core/services/signalr-service/signalr-service';
 import { ConfirmationService } from '../../core/services/confirmation-service/confirmation-service';
-import { DeleteProviderSwalConfig, ProviderColumnHeader } from './provider-helper';
+import { DeleteProviderSwalConfig, exportToPdf, ProviderColumnHeader } from './provider-helper';
 import { MyScheduleService } from '../../core/services/my-schedule-services/my-schedule-service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { AuthService } from '../../core/services/auth/auth.service';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
+import { ProviderRevenue } from './provider-revenue/provider-revenue';
+import {MatBadgeModule} from '@angular/material/badge';
 
 @Component({
   selector: 'app-provider',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatTabsModule, GenericTable, MatIcon],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatTabsModule, GenericTable, MatIcon, MatBadgeModule],
   templateUrl: './provider.html',
   styleUrl: './provider.css'
 })
 export class Provider implements OnInit{
-  data: ProviderModel = {
-    providerList: [],
-    providerPagination: {
-      totalRecord: 0,
-      pageSize: 5,
-      currentPage: 1,
-      totalPage: 0,
-      minRow: 0,
-      maxRow: 0
-    },
-    serviceList: []
-  };
+  data!: ProviderModel ;
   searchControl = new FormControl('');
   columns = ProviderColumnHeader;
 
   serviceId = -1;
   totalCount = 0;
+  allCount = 0;
   page = 1;
   pageSize = 5;
   sortBy = 'id';
@@ -54,11 +44,10 @@ export class Provider implements OnInit{
   searchString = '';
   selectedTabIndex = 0;
 
-  constructor(private providerService: ProviderService, private serviceApi: ServiceApi, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService, private myScheduleService: MyScheduleService, private authService: AuthService){
-    this.loadInitialData();
-  }
+  constructor(private providerService: ProviderService, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService, private myScheduleService: MyScheduleService, private authService: AuthService){}
 
   ngOnInit(): void{
+    this.loadInitialData();
     this.searchControl.valueChanges
       .pipe( debounceTime(300), distinctUntilChanged() )
       .subscribe((value: string | null) => { this.onSearch(value ?? ''); });
@@ -73,9 +62,14 @@ export class Provider implements OnInit{
     }).subscribe({
       next: ({ providers, services }) => {
         this.data = {
-          ...providers,
+          providerList: providers.providerList.map(p => ({
+            ...p,
+            revenueGenerated: `₹${p.revenueGenerated}`
+          })),
+          providerPagination: providers.providerPagination,
           serviceList: services
         };
+        this.allCount = this.serviceId == -1 ? providers.providerPagination.totalRecord : this.allCount;
         this.totalCount = providers.providerPagination.totalRecord;
       },
       error: () => this.toastService.showError('Error loading data')
@@ -92,7 +86,10 @@ export class Provider implements OnInit{
     this.providerService.getProducts(serviceId, searchString, this.page, this.pageSize, this.sortBy, this.sortDirection)
       .subscribe({
         next: (res) => {
-          this.data.providerList = res.providerList;
+          this.data.providerList = res.providerList.map(p => ({
+            ...p,
+            revenueGenerated: `₹${p.revenueGenerated}`
+          }));
           this.data.providerPagination = res.providerPagination;
           this.totalCount = res.providerPagination.totalRecord;
         },
@@ -100,23 +97,15 @@ export class Provider implements OnInit{
       });
   }
 
-  onTabChange(tabIndex: number): void{
+  onTabChange(tabIndex: number): void {
     this.selectedTabIndex = tabIndex;
     this.page = 1;
     this.sortBy = 'id';
     this.sortDirection = 'asc';
     this.searchString = '';
     this.searchControl.setValue('');
-
-    if(this.selectedTabIndex === 0){
-      this.serviceId = -1;
-      this.getDataByServiceId();
-    }
-    else {
-      const service = this.data.serviceList[tabIndex - 1];
-      this.serviceId = service.serviceId;
-      if (service) this.getDataByServiceId();
-    }
+    this.serviceId = tabIndex === 0 ? -1 : this.data.serviceList[tabIndex - 1]?.serviceId ?? -1;
+    this.getDataByServiceId();
   }
 
   onPageChange(event: any): void {
@@ -131,158 +120,42 @@ export class Provider implements OnInit{
     this.getDataByServiceId();
   }
 
-  onSearch(value: string) {
+  onSearch(value: string): void {
     this.searchString = value;
     this.page = 1;
     this.getDataByServiceId();
   }
 
-  openAddProviderDailog(): void{
-    const dialogRef = this.dialog.open(AddProvider, {
-      width: '400px',
-      data: {}
-    });
+  onRowClickes = (data: any) => this.openProviderRevenueModel(data.providerId);
 
-    dialogRef.afterClosed().subscribe(result => { if(result) this.getDataByServiceId(); });
+  openAddProviderDailog(): void {
+    openDailog(this.dialog, AddProvider, '400px').subscribe(result => result ? this.getDataByServiceId() : null)
   }
 
   openAssignServiceDialog(providerId: number): void {
-    const dialogRef = this.dialog.open(AssignService, {
-      width: '500px',
-      maxHeight: '90vh',
-      disableClose: true,
-      autoFocus: false,
-      data: { providerId: providerId, role: 'admin' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => { if (result) this.getDataByServiceId(); });
+    openDailog(this.dialog, AssignService, '500px', { providerId: providerId, role: 'admin' }).subscribe(result => result ? this.loadInitialData() : null);
   }
 
-  deleteProvider(providerId: number): void{
+  deleteProvider(providerId: number): void {
     this.confirmationService.confirm(DeleteProviderSwalConfig).then(confirmed => {
-      if(confirmed){
+      if(confirmed) {
         this.providerService.deleteProvider(providerId).subscribe({
-          next: (res) => {
-            this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Provider deleted succcesfully' : 'Error deleting provider'));
-          },
+          next: (res) => this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Provider deleted succcesfully' : 'Error deleting provider')),
           error: () => this.toastService.showError('Something went wrong')
         })
       }
     })
   }
 
-  OpenEditProviderDailog(providerId: number): void{
-    const dialogRef = this.dialog.open(EditProvider, {
-      width: '500px',
-      maxHeight: '90vh',
-      disableClose: true,
-      autoFocus: false,
-      data: providerId
-    });
-    dialogRef.afterClosed().subscribe(result => { if (result) this.getDataByServiceId(); });
+  OpenEditProviderDailog(providerId: number): void {
+    openDailog(this.dialog, EditProvider, '500px', providerId, '90vh').subscribe(result => result ? this.getDataByServiceId() : null);
   }
-  
+
   async exportToPdf() {
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Provider List', 14, 18);
-    doc.setFont('helvetica', 'normal');
-    const userImage = this.authService.getUserImage();
-    if(userImage) {
-      const userImageData = await this.getBase64ImageFromURL(userImage);
-      doc.addImage(userImageData, "PNG", 170, 5, 20, 20);
-    }
-    doc.text(this.authService.getUserName(), 130, 14);
-    doc.text(this.authService.getUserRole(), 130, 20);
-
-    let y = 30;
-    let rowIndex = 0;
-    let rowHeight = 40;
-
-    for (const provider of this.data.providerList) {
-      if (rowIndex % 2 === 0) {
-        doc.setFillColor(175, 201, 224);
-      } else {
-        doc.setFillColor(217, 235, 250);
-      }
-      doc.roundedRect(5, y - 5, 200, rowHeight, 5, 5, 'F');
-
-      let imgData = '';
-      if (provider.providerProfileImg) {
-        imgData = await this.getBase64ImageFromURL(provider.providerProfileImg);
-      }
-
-      doc.setFillColor(252, 252, 252);
-      doc.roundedRect(10, y, 30, 30, 5, 5, 'F');
-      if (imgData) {
-        doc.addImage(imgData, 'PNG', 10, y, 30, 30);
-      } else {
-        doc.setFontSize(10);
-        doc.text('N/A', 25, y + 15, { align: 'center' });
-      }
-
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Provider Name : ', 50, y+8);
-      doc.setFont('helvetica', 'normal');
-      doc.text(provider.providerName, 85, y+8);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Provider Email : ', 50, y+16);
-      doc.setFont('helvetica', 'normal');
-      doc.text(provider.email, 85, y+16);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Provider Phone No : ', 50, y+24);
-      doc.setFont('helvetica', 'normal');
-      doc.text(provider.phoneNo.toString(), 93, y+24);
-
-      y += 45;
-      if(y > 280){
-        doc.addPage();
-        y = 15;
-      }
-      rowIndex++;
-    }
-    doc.save('provider-list.pdf');
+    exportToPdf(this.authService.getUserImage(), this.authService.getUserName(), this.authService.getUserRole(), this.myScheduleService, this.data.providerList);
   }
 
-  async getBase64ImageFromURL(imgPathUrl: string): Promise<string>{
-    try {
-      const imgPath = imgPathUrl.split("/").pop();
-      const imageUrl = this.myScheduleService.getProfileImageUrl(imgPath!);
-      const response = await fetch(imageUrl, { mode: "cors", credentials: "include" });
-      const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-      const circularImage = await new Promise<string>((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          const size = 60; // adjust size
-          const canvas = document.createElement("canvas");
-          canvas.width = size;
-          canvas.height = size;
-          const ctx = canvas.getContext("2d")!;
-
-          // Clip in a circle
-          ctx.beginPath();
-          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.clip();
-
-          ctx.drawImage(img, 0, 0, size, size);
-          resolve(canvas.toDataURL("image/png"));
-        };
-        img.src = base64;
-      });
-      return circularImage;
-    } catch (error) {
-      console.error("Error loading image:", error);
-      return "";
-    }
+  openProviderRevenueModel(providerId: number): void {
+    this.providerService.getProviderRevenue(providerId).subscribe((res) => openDailog(this.dialog, ProviderRevenue, '500px', res.revenueList, '90vh').subscribe());
   }
-
 }

@@ -5,7 +5,8 @@ export interface ProviderInfo{
   providerName: string,
   email: string,
   phoneNo: string,
-  providerProfileImg: string
+  providerProfileImg: string,
+  revenueGenerated: string
 }
 
 export interface ProviderModel{

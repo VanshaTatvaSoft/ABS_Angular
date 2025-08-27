@@ -7,6 +7,7 @@ import { ServiceInfo } from '../../models/service-model.interface';
 import { ResponseInterface } from '../../models/response.interface';
 import { AssignServiceViewModel } from '../../models/assign-service.interface';
 import { EditProviderViewModel } from '../../models/edit-provider.interface';
+import { ProviderServiceViewModel } from '../../models/provider-revenue.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -73,6 +74,10 @@ export class ProviderService {
 
   editProvider(model: EditProviderViewModel, selectedDays: string): Observable<ResponseInterface>{
     return this.http.put<ResponseInterface>(`${this.baseUrl}/edit`, model);
+  }
+
+  getProviderRevenue(providerId: number): Observable<ProviderServiceViewModel>{
+    return this.http.get<ProviderServiceViewModel>(`${this.baseUrl}/get-provider-revenue?providerId=${providerId}`);
   }
 
 }

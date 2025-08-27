@@ -17,7 +17,6 @@ export const entryGuardGuard: CanActivateFn = (route, state) => {
     return authService.rememberMe().pipe(
       switchMap(res => {
         if (res.success) {
-          // console.log("Entry Res - ",res);
           authService.setUserRole(jwtService.getUserRole()?? '');
           authService.setUserName(jwtService.getUserName()?? '');
           authService.setUserImage(res.profileImg);

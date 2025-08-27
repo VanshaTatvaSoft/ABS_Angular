@@ -9,6 +9,7 @@ import { SweetToastService } from '../../../core/services/toast/sweet-toast.serv
 import { GenericInput } from '@vanshasomani/generic-input';
 import { JwtService } from '../../../core/services/jwt-service/jwt-service';
 import { handelEmailValidation } from '../../../shared/validators/email-check.validator';
+import { LoginFormConfig } from './login.helper';
 @Component({
   selector: 'app-login',
   imports: [ FormsModule, CommonModule, ReactiveFormsModule, MatCheckboxModule, RouterLink, GenericInput ],
@@ -17,6 +18,7 @@ import { handelEmailValidation } from '../../../shared/validators/email-check.va
 })
 export class Login {
   loginForm: FormGroup;
+  loginFormConfig = LoginFormConfig;
 
   constructor(
     private fb: FormBuilder,
@@ -33,22 +35,19 @@ export class Login {
   }
 
   ngOnInit(): void {
-    this.emailControl.valueChanges
+    this.loginForm.get("email")?.valueChanges
       .pipe(
         debounceTime(500),
         distinctUntilChanged(),
-        switchMap(email => !email || this.emailControl.invalid ? of(null) : this.authService.checkEmailExist(email).pipe( catchError(() => of(false))))
+        switchMap(email => !email || this.loginForm.get("email")?.invalid ? of(null) : this.authService.checkEmailExist(email).pipe( catchError(() => of(false))))
       )
       .subscribe((exists) => {
-        handelEmailValidation(this.emailControl, exists);
+        handelEmailValidation(this.loginForm.get("email"), exists);
       });
   }
 
-  get emailControl(): FormControl {
-    return this.loginForm.get('email') as FormControl;
-  }
-  get passwordControl(): FormControl {
-    return this.loginForm.get('password') as FormControl;
+  getControl(name: string): FormControl {
+    return this.loginForm.get(name) as FormControl;
   }
 
   onSubmit(): void {

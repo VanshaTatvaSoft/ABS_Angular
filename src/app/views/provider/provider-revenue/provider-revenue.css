@@ -1,0 +1,16 @@
+.amount-display {
+  font-size: 1.1rem;
+  padding: 0.75rem;
+  background: #dbeaf8;
+  border-radius: 8px;
+  border: 1px solid #c7c7c7;
+}
+
+.no-data-display {
+  font-size: 1.1rem;
+  padding: 0.75rem;
+  background: #f8dedb;
+  border-radius: 8px;
+  border: 1px solid #ff7676;
+  height: 100px;
+}

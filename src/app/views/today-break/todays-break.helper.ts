@@ -1,3 +1,4 @@
+import { ConfirmDialogConfig } from "../../core/models/confirm-dialog.interface";
 import { TimeFormatService } from "../../core/services/time-format-service/time-format-service";
 
 export function buildBreakPayload(
@@ -33,4 +34,13 @@ export function buildBreakPayload(
     })),
     deleteBreakIds: deletedBreaks
   }
+}
+
+export const DeleteBreakConfirmationDailog: ConfirmDialogConfig = {
+  title: "Are you sure you want to delete this break?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonText: "Yes, delete it!",
+  cancelButtonText: "No"
 }

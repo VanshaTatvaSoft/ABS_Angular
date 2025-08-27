@@ -1,23 +1,31 @@
 <h2 mat-dialog-title class="ps-3 pt-2">Edit Provider</h2>
 <mat-dialog-content *ngIf="editForm">
   <form [formGroup]="editForm">
-    <lib-generic-input [formControl]="emailControl" [config]="editProviderFormConfig.email"></lib-generic-input>
 
-    <lib-generic-input [formControl]="nameControl" [config]="editProviderFormConfig.name"></lib-generic-input>
+    <!-- email -->
+    <lib-generic-input [formControl]="getControl('email')" [config]="editProviderFormConfig.email"></lib-generic-input>
 
-    <lib-generic-input [formControl]="phoneNoControl" [config]="editProviderFormConfig.phoneNo"></lib-generic-input>
+    <!-- name -->
+    <lib-generic-input [formControl]="getControl('name')" [config]="editProviderFormConfig.name"></lib-generic-input>
+
+    <!-- phone no -->
+    <lib-generic-input [formControl]="getControl('phoneNo')" [config]="editProviderFormConfig.phoneNo"></lib-generic-input>
 
     <div class="mb-3 d-flex justify-content-around align-items-center">
-      <lib-generic-input [formControl]="isRecurringControl" [config]="editProviderFormConfig.isRecurring"></lib-generic-input>
-      <lib-generic-input [formControl]="isAvailableControl" [config]="editProviderFormConfig.isAvailable"></lib-generic-input>
+      <!-- is recurring -->
+      <lib-generic-input [formControl]="getControl('isRecurring')" [config]="editProviderFormConfig.isRecurring"></lib-generic-input>
+      <!-- is available -->
+      <lib-generic-input [formControl]="getControl('isAvailable')" [config]="editProviderFormConfig.isAvailable"></lib-generic-input>
     </div>
 
     <div class="row">
       <div class="col-6">
-        <lib-generic-input [formControl]="startTimeControl" [config]="editProviderFormConfig.startTime"></lib-generic-input>
+        <!-- start time -->
+        <lib-generic-input [formControl]="getControl('startTime')" [config]="editProviderFormConfig.startTime"></lib-generic-input>
       </div>
       <div class="col-6">
-        <lib-generic-input [formControl]="endTimeControl" [config]="editProviderFormConfig.endTime"></lib-generic-input>
+        <!-- end time -->
+        <lib-generic-input [formControl]="getControl('endTime')" [config]="editProviderFormConfig.endTime"></lib-generic-input>
       </div>
     </div>
 
@@ -42,7 +50,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">Cancel</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="editForm?.invalid || this.isSaving">
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="editForm!.invalid || this.isSaving">
     @if(isSaving){ <mat-spinner diameter="20"></mat-spinner> }
     @else{ <span>Submit</span> }
   </button>

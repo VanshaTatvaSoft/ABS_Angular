@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AssignServiceViewModel } from '../../../core/models/assign-service.interface';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { ProviderService } from '../../../core/services/provider/provider.service';
@@ -11,11 +11,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SignalrService } from '../../../core/services/signalr-service/signalr-service';
-import { GenericInput } from '@vanshasomani/generic-input';
 
 @Component({
   selector: 'app-assign-service',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatSelectModule, CommonModule, MatProgressSpinnerModule, MatDialogContent, MatDialogActions, GenericInput],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatInputModule, MatCheckboxModule, MatButtonModule, MatSelectModule, CommonModule, MatProgressSpinnerModule, MatDialogContent, MatDialogActions],
   templateUrl: './assign-service.html',
   styleUrl: './assign-service.css'
 })

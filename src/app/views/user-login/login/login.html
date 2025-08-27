@@ -3,44 +3,11 @@
 </div>
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-  <lib-generic-input
-  [config]="{
-    appearance: 'outline',
-    class: 'w-100',
-    label: 'Email',
-    type: 'email',
-    placeholder: 'Enter your email',
-    id: 'userEmail',
-    name: 'userEmail',
-    disabled: false,
-    icon: 'email',
-    customErrorMessages: {
-      required: 'Email is required',
-      email: 'Enter a valid email',
-      notFound: 'There is no such user'
-    }
-  }"
-  [formControl]="emailControl"
-  >
-  </lib-generic-input>
+  <!-- email -->
+  <lib-generic-input [config]="loginFormConfig.email" [formControl]="getControl('email')"></lib-generic-input>
 
-  <lib-generic-input
-  [config]="{
-    appearance: 'outline',
-    class: 'w-100',
-    label: 'Password',
-    type: 'password',
-    placeholder: 'Enter your password',
-    id: 'userPassword',
-    name: 'userPassword',
-    disabled: false,
-    customErrorMessages: {
-      required: 'password is required'
-    }
-  }"
-  [formControl]="passwordControl"
-  >
-  </lib-generic-input>
+  <!-- password -->
+  <lib-generic-input [config]="loginFormConfig.password" [formControl]="getControl('password')"></lib-generic-input>
 
   <div class="d-flex justify-content-between align-items-start mb-2">
     <mat-checkbox class="example-margin" formControlName="rememberMe"><span class="fs-6">Remember

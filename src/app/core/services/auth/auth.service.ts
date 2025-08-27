@@ -133,4 +133,16 @@ export class AuthService {
     return this.http.get<ResponseInterface>(`${this.apiUrl}/get-user-profile?userId=${userId}`)
   }
 
+  getMyRevenue(formData: any): Observable<number> {
+    const params: any = { filter: formData.filter };
+    if (formData.startDate) {
+      params.startDate = formData.startDate;
+    }
+    if (formData.endDate) {
+      params.endDate = formData.endDate;
+    }
+
+    return this.http.get<number>(`${this.apiUrl}/get-my-earning`, { params });
+  }
+
 }

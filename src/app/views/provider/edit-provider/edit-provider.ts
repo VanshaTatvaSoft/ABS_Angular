@@ -47,7 +47,7 @@ export class EditProvider implements OnInit{
         providerId: [res.providerId],
         email: [{ value: res.email, disabled: true }],
         name: [res.name, [Validators.required]],
-        phoneNo: [res.phoneNo, [Validators.required, PhoneNumberValidator]],
+        phoneNo: [res.phoneNo.toString(), [Validators.required, PhoneNumberValidator]],
         providerAvailabilityId: [res.providerAvailabilityId],
         isRecurring: [res.isRecurring],
         isAvailable: [res.isAvailable],
@@ -61,26 +61,8 @@ export class EditProvider implements OnInit{
     });
   }
 
-  get emailControl() : FormControl{
-    return this.editForm.get('email') as FormControl;
-  }
-  get nameControl() : FormControl{
-    return this.editForm.get('name') as FormControl;
-  }
-  get phoneNoControl() : FormControl{
-    return this.editForm.get('phoneNo') as FormControl;
-  }
-  get isRecurringControl() : FormControl{
-    return this.editForm.get('isRecurring') as FormControl;
-  }
-  get isAvailableControl() : FormControl{
-    return this.editForm.get('isAvailable') as FormControl;
-  }
-  get startTimeControl() : FormControl{
-    return this.editForm.get('startTime') as FormControl;
-  }
-  get endTimeControl() : FormControl{
-    return this.editForm.get('endTime') as FormControl;
+  getControl(name: string): FormControl {
+    return this.editForm.get(name) as FormControl;
   }
 
   toggleDay(day: string) {

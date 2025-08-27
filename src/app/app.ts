@@ -6,7 +6,7 @@ import { Loader } from './shared/components/loader/loader';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, Loader],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

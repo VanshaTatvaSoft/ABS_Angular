@@ -44,6 +44,7 @@ export class GenericTable implements AfterViewChecked {
   @Input() actionColumnName?: string = 'Action';
   @Output() pageChange = new EventEmitter<any>();
   @Output() sortChange = new EventEmitter<Sort>();
+  @Output() rowClicked = new EventEmitter<any>();
 
   constructor( private injector: Injector, private toast: ToastrService ) { }
 
@@ -54,7 +55,7 @@ export class GenericTable implements AfterViewChecked {
     const baseCols = this.columns
                         .filter(c => !c.hidden)
                         .map((c) => c.key);
-                        
+
     return this.columnTemplates['actions']
     ? [...baseCols, 'actions']
     : baseCols;
