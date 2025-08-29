@@ -13,6 +13,7 @@ import { TimeFormatService } from '../../core/services/time-format-service/time-
 import { GenericTable } from '../../shared/components/generic-table/generic-table';
 import { AssignService } from '../provider/assign-service/assign-service';
 import { MyServiceColumnHeader } from './my-service.helper';
+import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
 
 @Component({
   selector: 'app-my-service',
@@ -31,7 +32,7 @@ export class MyService implements OnInit{
   sortDirection = 'asc';
   searchData = '';
   providerId?: number;
-  
+
   constructor(private myServcieApi: MyServiceService, private dialog: MatDialog, private signalrService: SignalrService, private timeFormatService: TimeFormatService){ }
 
   ngOnInit(): void {
@@ -79,21 +80,6 @@ export class MyService implements OnInit{
     this.loadData();
   }
 
-  openAssignServiceDialog(providerId: number): void {
-    const dialogRef = this.dialog.open(AssignService, {
-      width: '500px',
-      maxHeight: '90vh',
-      disableClose: true,     // ✅ Prevents closing via outside click
-      autoFocus: false,       // Optional: prevent auto focus on first input
-      data: {
-        providerId: providerId,
-        role: 'provider' // ✅ pass role here
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) { this.loadData(); }
-    });
-  }
-
+  openAssignServiceDialog = (providerId: number) =>
+    openDailog(this.dialog, AssignService, '400px', {providerId: providerId,role: 'provider'}, '90vh').subscribe(result => result ? this.loadData() : null);
 }

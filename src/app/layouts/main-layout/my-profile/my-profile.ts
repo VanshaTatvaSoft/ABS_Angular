@@ -2,7 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { SweetToastService } from '../../../core/services/toast/sweet-toast.service';
-import { LoaderService } from '../../../core/services/loader-service/loader-service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,9 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { PhoneNumberValidator } from '../../../shared/validators/phone-number.validator';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { catchError, EMPTY, of, switchMap } from 'rxjs';
-import { Router } from '@angular/router';
-import { GenericInput } from '@vanshasomani/generic-input';
 import { MatIcon } from '@angular/material/icon';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TimeFormatService } from '../../../core/services/time-format-service/time-format-service';
@@ -84,26 +80,12 @@ export class MyProfile implements OnInit {
       }
 
       const reader = new FileReader();
-      reader.onload = () => {
-        this.previewImage = reader.result as string;
-      };
+      reader.onload = () => this.previewImage = reader.result as string;
       reader.readAsDataURL(this.selectedFile);
     }
   }
 
-  get nameControl(): FormControl {
-    return this.myProfileForm.get('name') as FormControl;
-  }
-  get phoneNoControl(): FormControl {
-    return this.myProfileForm.get('phoneNo') as FormControl;
-  }
-  getControll(name: string): FormControl {
-    return this.myProfileForm.get(name) as FormControl;
-  }
-
-  close(): void {
-    this.dialogRef.close(false);
-  }
+  close = (): void => this.dialogRef.close(false);
 
   submit(): void{
     if(this.myProfileForm.invalid) return;

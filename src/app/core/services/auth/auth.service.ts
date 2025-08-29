@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ResponseInterface } from '../../models/response.interface';
 import { MyProfileInterface } from '../../models/my-profile.interface';
 import { JwtService } from '../jwt-service/jwt-service';
+import { GenericService } from '../generic-service/generic-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiBaseUrl}/UserLogin`;
+  private entryPoint = 'UserLogin';
   private userRoleSubject = new BehaviorSubject<string>('');
   private userNameSubject = new BehaviorSubject<string>('');
   private userImageSubject = new BehaviorSubject<string | null>(null);
@@ -18,131 +17,51 @@ export class AuthService {
   userName$ = this.userNameSubject.asObservable();
   userImage$ = this.userImageSubject.asObservable();
 
-  constructor(private http: HttpClient, private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService, private generic: GenericService) {}
 
-  setUserRole(role: string | '') {
-    if(role) this.userRoleSubject.next(role);
-    else return;
-  }
+  setUserRole = (role: string | '') => role ? this.userRoleSubject.next(role) : undefined;
 
-  setUserName(name: string | '') {
-    if(name) this.userNameSubject.next(name);
-    else return;
-  }
+  setUserName = (name: string | '') => name ? this.userNameSubject.next(name) : undefined;
 
-  setUserImage(base64: string | null) {
-    this.userImageSubject.next(base64);
-  }
+  setUserImage = (base64: string | null) => this.userImageSubject.next(base64);
 
-  getUserRole(): string {
-    return this.userRoleSubject.getValue();
-  }
+  getUserRole = (): string => this.userRoleSubject.getValue();
 
-  getUserName(): string {
-    return this.userNameSubject.getValue();
-  }
+  getUserName = (): string => this.userNameSubject.getValue();
 
-  getUserImage(): string | null {
-    return this.userImageSubject.getValue();
-  }
+  getUserImage = (): string | null => this.userImageSubject.getValue();
 
-  clearUserState(): void {
-    this.userRoleSubject.next('');
-    this.userRoleSubject.complete();
+  login = (data: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/login`, data);
 
-    this.userNameSubject.next('');
-    this.userNameSubject.complete();
-  }
+  checkEmailExist = (email: string): Observable<boolean> => this.generic.getList<boolean>(`${this.entryPoint}/check-email-exist?email=${email}`);
 
-  login(data: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/login`, data, {
-      withCredentials: true,
-    });
-  }
+  register = (data: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/register`, data);
 
-  checkEmailExist(email: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-email-exist?email=${email}`, {
-      withCredentials: true,
-    });
-  }
+  firstLogin = (data: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/first-change-password`, data);
 
-  register(data: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/register`, data, {
-      withCredentials: true,
-    });
-  }
+  forgotPassword = (data: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/forgot-password`, data);
 
-  firstLogin(data: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/first-change-password`, data, {
-      withCredentials: true,
-    });
-  }
+  resetPasswordCheck = (email: string, token: string): Observable<ResponseInterface> =>
+    this.generic.getList<ResponseInterface>(`${this.entryPoint}/reset-password-check?email=${email}&token=${token}`);
 
-  forgotPassword(data: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/forgot-password`, data, {
-      withCredentials: true,
-    });
-  }
+  resetPassword = (data: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/reset-password`, data);
 
-  resetPasswordCheck(email: string, token: string): Observable<ResponseInterface> {
-    return this.http.get<ResponseInterface>(`${this.apiUrl}/reset-password-check?email=${email}&token=${token}`, {
-      withCredentials: true,
-    });
-  }
+  rememberMe = (): Observable<ResponseInterface> => this.generic.getList<ResponseInterface>(`${this.entryPoint}/remember-me`);
 
-  resetPassword(data: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/reset-password`, data, {
-      withCredentials: true,
-    });
-  }
+  logout = (): Observable<any> => this.generic.getList<any>(`${this.entryPoint}/logout`);
 
-  rememberMe(): Observable<ResponseInterface>{
-    return this.http.get<ResponseInterface>(`${this.apiUrl}/remember-me`, {
-      withCredentials: true,
-    });
-  }
+  validateAccessToken = (): Observable<ResponseInterface> => this.generic.getList<ResponseInterface>(`${this.entryPoint}/validate-access-token`);
 
-  logout(): Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/logout`, {
-      withCredentials: true,
-    });
-  }
+  myProfileGet = (): Observable<MyProfileInterface> => this.generic.getList<MyProfileInterface>(`${this.entryPoint}/my-profile`);
 
-  validateAccessToken(): Observable<ResponseInterface> {
-    return this.http.get<ResponseInterface>(`${this.apiUrl}/validate-access-token`, {
-      withCredentials: true,
-    });
-  }
+  myProfilePost = (profileData: FormData): Observable<ResponseInterface> => this.generic.update<ResponseInterface>(`${this.entryPoint}/my-profile`, profileData);
 
-  myProfileGet(): Observable<MyProfileInterface> {
-    return this.http.get<MyProfileInterface>(`${this.apiUrl}/my-profile`, {
-      withCredentials: true
-    });
-  }
+  changePasswordPost = (formData: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/change-password`, formData);
 
-  myProfilePost(profileData: FormData): Observable<ResponseInterface> {
-    return this.http.put<ResponseInterface>(`${this.apiUrl}/my-profile`, profileData);
-  }
+  getUserProfileImg = (): Observable<ResponseInterface> =>
+    this.generic.getList<ResponseInterface>(`${this.entryPoint}/get-user-profile?userId=${Number(this.jwtService.getUserId())}`);
 
-  changePasswordPost(formData: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(`${this.apiUrl}/change-password`, formData);
-  }
-
-  getUserProfileImg(): Observable<ResponseInterface> {
-    const userId : number = Number(this.jwtService.getUserId());
-    return this.http.get<ResponseInterface>(`${this.apiUrl}/get-user-profile?userId=${userId}`)
-  }
-
-  getMyRevenue(formData: any): Observable<number> {
-    const params: any = { filter: formData.filter };
-    if (formData.startDate) {
-      params.startDate = formData.startDate;
-    }
-    if (formData.endDate) {
-      params.endDate = formData.endDate;
-    }
-
-    return this.http.get<number>(`${this.apiUrl}/get-my-earning`, { params });
-  }
+  getMyRevenue = (formData: any): Observable<number> =>
+    this.generic.getList<number>(`${this.entryPoint}/get-my-earning`, {startDate: formData.startDate, endDate: formData.endDate, filter: formData.filter});
 
 }

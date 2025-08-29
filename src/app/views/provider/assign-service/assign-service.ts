@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AssignServiceViewModel } from '../../../core/models/assign-service.interface';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { ProviderService } from '../../../core/services/provider/provider.service';
@@ -27,7 +27,6 @@ export class AssignService {
     private dialogRef: MatDialogRef<AssignService>,
     @Inject(MAT_DIALOG_DATA) public data: { providerId: number, role: string },
     private providerService: ProviderService,
-    private fb: FormBuilder,
     private toastService: SweetToastService,
     private signalrService: SignalrService
   ) {}
@@ -46,9 +45,7 @@ export class AssignService {
     });
   }
 
-  isChecked(serviceId: number): boolean {
-    return this.selectedServiceIds.includes(serviceId);
-  }
+  isChecked = (serviceId: number): boolean => this.selectedServiceIds.includes(serviceId);
 
   onCheckboxChange(serviceId: number, event: MatCheckboxChange): void {
     if (event.checked) this.selectedServiceIds.push(serviceId);

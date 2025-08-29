@@ -1,56 +1,39 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MyScheduleViewModel } from '../../models/my-schedule.interface';
 import { ResponseInterface } from '../../models/response.interface';
 import { Notification } from '../../models/notification.interface';
+import { GenericService } from '../generic-service/generic-service.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MyScheduleService {
+  private endPoint = 'MySchedule';
   private baseUrl = `${environment.apiBaseUrl}/MySchedule`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private generic: GenericService) {}
 
-  getMySchedule(
+  getMySchedule = (
     searchData: string | null = '',
     page: number = 1,
     pageSize: number = 5,
     sortBy: string = 'appointmentDate',
     sortDirection: string = 'asc',
     filter: string = 'booked'
-  ): Observable<MyScheduleViewModel>{
-    let params = new HttpParams()
-      .set('page', page)
-      .set('pageSize',pageSize)
-      .set('sortBy',sortBy)
-      .set('sortDirection',sortDirection)
-      .set('filter', filter);
+  ): Observable<MyScheduleViewModel> =>
+    this.generic.getList<MyScheduleViewModel>(`${this.endPoint}/list`, { searchData, page, pageSize, sortBy, sortDirection, filter});
 
-      if(searchData) params = params.set('searchData', searchData);
+  completeAppointment = (appointmentId: number): Observable<ResponseInterface> =>
+    this.generic.create<ResponseInterface>(`${this.endPoint}/complete/?appointmentId=${appointmentId}`, {});
 
-      return this.http.get<MyScheduleViewModel>(`${this.baseUrl}/list`, {params});
-  }
+  notification = (): Observable<Notification[]> => this.generic.getList<Notification[]>(`${this.endPoint}/notifications`);
 
-  completeAppointment(appointmentId: number): Observable<ResponseInterface>{
-    return this.http.post<ResponseInterface>(`${this.baseUrl}/complete/?appointmentId=${appointmentId}`, {});
-  }
+  markAsRead = (notificationId: number): Observable<boolean> => this.generic.create<boolean>(`${this.endPoint}/notifications/mark-read`, notificationId);
 
-  notification(): Observable<Notification[]>{
-    return this.http.get<Notification[]>(`${this.baseUrl}/notifications`);
-  }
+  markAllAsRead = (notificationIds: number[]): Observable<boolean> => this.generic.create<boolean>(`${this.endPoint}/notifications/mark-all-read`, notificationIds);
 
-  markAsRead(notificationId: number): Observable<boolean>{
-    return this.http.post<boolean>(`${this.baseUrl}/notifications/mark-read`, notificationId);
-  }
+  getProfileImageUrl = (imageName: string): string => `${this.baseUrl}/${imageName}`;
 
-  markAllAsRead(notificationIds: number[]): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/notifications/mark-all-read`, notificationIds);
-  }
-
-  getProfileImageUrl(imageName: string): string {
-    return `${this.baseUrl}/${imageName}`;
-  }
 }

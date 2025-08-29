@@ -15,7 +15,7 @@
   <span id="MyBookingListContainer">
     <div class="card-body p-0" style="overflow-y: auto;">
       <app-generic-table
-        [data]="data!.myBookingList || []"
+        [data]="data?.myBookingList || []"
         [columns]="columns"
         [isPaginated]="false"
         [columnTemplates]="{ actions: actionBtns }"

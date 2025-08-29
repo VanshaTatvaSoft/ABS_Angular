@@ -48,9 +48,7 @@ export class MySchedule implements OnInit {
       filterOption: ['booked']
     })
     this.userName = authService.getUserName();
-    this.authService.userImage$.subscribe(url => {
-      this.userImg = url;
-    });
+    this.authService.userImage$.subscribe(url => this.userImg = url);
   }
 
   get filterOptionControl(): FormControl {

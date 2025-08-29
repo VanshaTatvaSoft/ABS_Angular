@@ -1,21 +1,15 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
+import { GenericService } from '../generic-service/generic-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = `${environment.apiBaseUrl}/Dashboard`;
+  private endPoint = 'Dashboard'
 
-  constructor(private http: HttpClient) {}
+  constructor(private generic: GenericService) {}
 
-  getDashboardData(timeDropDown: string): Observable<any>{
-    return this.http.get<any>(`${this.apiUrl}/overview`, {
-      params: { timeDropDown },
-      withCredentials: true,
-    })
-  }
+  getDashboardData = (timeDropDown: string): Observable<any> => this.generic.getList<any>(`${this.endPoint}/overview`, {timeDropDown})
 
 }

@@ -30,9 +30,7 @@ export class TodayBreak {
   totalTimeWorked!: string;
 
   constructor(private fb: FormBuilder, private timeFormatService: TimeFormatService, private todaysBreakService: TodaysBreakService, private toastService: SweetToastService, private breakFormFactory: BreakFormFactoryService, private confirmDailogService: ConfirmationService) {
-    this.breakForm = this.fb.group({
-      breaks: this.fb.array([])
-    });
+    this.breakForm = this.fb.group({ breaks: this.fb.array([]) });
     this.loadData();
   }
 
@@ -76,12 +74,9 @@ export class TodayBreak {
     return current !== original || this.deletedBreaks.length > 0;
   }
 
-  addBreak() {
-    const breakGroup = this.breakFormFactory.createBreak(null, this.data);
-    this.breaks.push(breakGroup);
-  }
+  addBreak = () => this.breaks.push(this.breakFormFactory.createBreak(null, this.data));
 
-  checkCanEdit(startTime: string): boolean | null{ return this.breakFormFactory.checkCanEdit(startTime);}
+  checkCanEdit = (startTime: string): boolean | null => this.breakFormFactory.checkCanEdit(startTime);
 
   deleteBreak(index: number, brk: any) {
     if(brk.value.providerBreakId) {
@@ -92,9 +87,7 @@ export class TodayBreak {
         }
       });
     }
-    else{
-      this.breaks.removeAt(index);
-    }
+    else this.breaks.removeAt(index);
   }
 
   submit() {
@@ -113,13 +106,10 @@ export class TodayBreak {
           else this.toastService.showError('Failed to update breaks');
           this.loadData();
         },
-        error: (err) => {
-          this.toastService.showError('Something went wrong while updating breaks');
-        }
+        error: () =>  this.toastService.showError('Something went wrong while updating breaks')
       });
-    } else {
-      this.breakForm.markAllAsTouched();
     }
+    else this.breakForm.markAllAsTouched();
   }
 
 }

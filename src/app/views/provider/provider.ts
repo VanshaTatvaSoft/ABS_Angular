@@ -48,11 +48,9 @@ export class Provider implements OnInit{
 
   ngOnInit(): void{
     this.loadInitialData();
-    this.searchControl.valueChanges
-      .pipe( debounceTime(300), distinctUntilChanged() )
-      .subscribe((value: string | null) => { this.onSearch(value ?? ''); });
+    this.searchControl.valueChanges.pipe( debounceTime(300), distinctUntilChanged() ).subscribe((value: string | null) => this.onSearch(value ?? ''));
     this.signalrService.startConnection();
-    this.signalrService.myService = (msg) => { this.getDataByServiceId(); }
+    this.signalrService.myService = (msg) => this.getDataByServiceId();
   }
 
   loadInitialData(): void {
@@ -128,34 +126,30 @@ export class Provider implements OnInit{
 
   onRowClickes = (data: any) => this.openProviderRevenueModel(data.providerId);
 
-  openAddProviderDailog(): void {
-    openDailog(this.dialog, AddProvider, '400px').subscribe(result => result ? this.getDataByServiceId() : null)
-  }
+  openAddProviderDailog = () => openDailog(this.dialog, AddProvider, '400px').subscribe(result => result ? this.getDataByServiceId() : null)
 
-  openAssignServiceDialog(providerId: number): void {
+  openAssignServiceDialog = (providerId: number) =>
     openDailog(this.dialog, AssignService, '500px', { providerId: providerId, role: 'admin' }).subscribe(result => result ? this.loadInitialData() : null);
-  }
 
   deleteProvider(providerId: number): void {
     this.confirmationService.confirm(DeleteProviderSwalConfig).then(confirmed => {
       if(confirmed) {
         this.providerService.deleteProvider(providerId).subscribe({
           next: (res) => this.toastService[res.success ? 'showSuccess' : 'showError'](res.message || (res.success ? 'Provider deleted succcesfully' : 'Error deleting provider')),
-          error: () => this.toastService.showError('Something went wrong')
+          error: () => this.toastService.showError('Something went wrong'),
+          complete: () => this.getDataByServiceId()
         })
       }
     })
   }
 
-  OpenEditProviderDailog(providerId: number): void {
+  OpenEditProviderDailog = (providerId: number) =>
     openDailog(this.dialog, EditProvider, '500px', providerId, '90vh').subscribe(result => result ? this.getDataByServiceId() : null);
-  }
 
   async exportToPdf() {
     exportToPdf(this.authService.getUserImage(), this.authService.getUserName(), this.authService.getUserRole(), this.myScheduleService, this.data.providerList);
   }
 
-  openProviderRevenueModel(providerId: number): void {
+  openProviderRevenueModel = (providerId: number) =>
     this.providerService.getProviderRevenue(providerId).subscribe((res) => openDailog(this.dialog, ProviderRevenue, '500px', res.revenueList, '90vh').subscribe());
-  }
 }

@@ -1,42 +1,25 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ServiceModel } from '../../models/service-model.interface';
 import { ResponseInterface } from '../../models/response.interface';
 import { EncryptionUtil } from '../../util/encryption/encryption.util';
+import { GenericService } from '../generic-service/generic-service.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServiceApi {
   private baseUrl = `${environment.apiBaseUrl}/services`;
+  private endpoint = 'services';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private generic: GenericService) {}
 
-  getServices(
-    search: string = '',
-    page: number = 1,
-    pageSize: number = 5,
-    sort: string = 'default',
-    sortDirection: string = 'asc'
-  ): Observable<ServiceModel> {
-    let params = new HttpParams()
-      .set('page', page)
-      .set('pageSize', pageSize)
-      .set('sortBy', sort)
-      .set('sortDirection', sortDirection);
-    if (search) params = params.set('searchString', search);
+  getServices = (search: string = '',page: number = 1,pageSize: number = 5,sort: string = 'default',sortDirection: string = 'asc') : Observable<ServiceModel> =>
+        this.generic.getList<ServiceModel>(`${this.endpoint}/list`, { searchString: search, page, pageSize, sortBy: sort, sortDirection, });
 
-    return this.http.get<ServiceModel>(`${this.baseUrl}/list`, { params });
-  }
-
-  addService(serviceData: any): Observable<ResponseInterface> {
-    return this.http.post<ResponseInterface>(
-      `${this.baseUrl}/add`,
-      serviceData
-    );
-  }
+  addService = (serviceData: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.endpoint}/add`, serviceData);
 
   editService(serviceData: any): Observable<ResponseInterface> {
     let encryptedPayload = EncryptionUtil.encrypt(serviceData);
@@ -47,9 +30,5 @@ export class ServiceApi {
     );
   }
 
-  deleteService(serviceId: number): Observable<ResponseInterface> {
-    return this.http.delete<ResponseInterface>(
-      `${this.baseUrl}/delete/${serviceId}`
-    );
-  }
+  deleteService = (serviceId: number): Observable<ResponseInterface> => this.generic.delete<ResponseInterface>(`${this.endpoint}/delete`, serviceId);
 }

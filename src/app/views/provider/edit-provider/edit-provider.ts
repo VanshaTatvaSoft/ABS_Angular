@@ -20,10 +20,11 @@ import { PhoneNumberValidator } from '../../../shared/validators/phone-number.va
 
 @Component({
   selector: 'app-edit-provider',
-  imports: [MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatDialogActions, CommonModule, FormsModule, MatButtonModule, ReactiveFormsModule, NgxMaterialTimepickerModule, MatCheckboxModule, MatSlideToggleModule, GenericInput ],
+  imports: [MatProgressSpinnerModule, MatFormFieldModule, MatInputModule, MatDialogContent, MatDialogActions, CommonModule, FormsModule, MatButtonModule, ReactiveFormsModule, NgxMaterialTimepickerModule, MatCheckboxModule, MatSlideToggleModule, GenericInput],
   templateUrl: './edit-provider.html',
   styleUrl: './edit-provider.css'
 })
+
 export class EditProvider implements OnInit{
   isSaving = false;
   editModel!: EditProviderViewModel;
@@ -61,9 +62,7 @@ export class EditProvider implements OnInit{
     });
   }
 
-  getControl(name: string): FormControl {
-    return this.editForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.editForm.get(name) as FormControl;
 
   toggleDay(day: string) {
     const selected = this.editForm.value.days;
@@ -73,17 +72,15 @@ export class EditProvider implements OnInit{
 
   submit(): void{
     this.isSaving = true;
-    const formValue = this.editForm.getRawValue(); // includes disabled fields like email
-    const selectedDays = JSON.stringify(formValue.days);
+    const formValue = this.editForm.getRawValue();
 
-    // Ensure time format is HH:mm:ss
     const formattedModel = {
       ...formValue,
       startTime: this.timeFormatService.transform(formValue.startTime, '24hr'),
       endTime: this.timeFormatService.transform(formValue.endTime, '24hr')
     };
 
-    this.providerService.editProvider(formattedModel, selectedDays).subscribe({
+    this.providerService.editProvider(formattedModel).subscribe({
       next:(res) => {
         this.toastService[res.success ? 'showSuccess' : "showError"](res.message || (res.success ? 'Provider edited successfully' : 'Error editing provider'))
         if(res.success) this.dialogRef.close(true);

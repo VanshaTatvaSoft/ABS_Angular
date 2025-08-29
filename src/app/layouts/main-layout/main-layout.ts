@@ -50,39 +50,24 @@ export class MainLayout implements OnInit {
     this.authService.logout().subscribe({
       next: () => {
         this.toastService.showSuccess('Logged out successfully.');
-        this.authService.clearUserState();
         this.router.navigate(['/login']);
       }
     });
   }
 
-  sideBarToggel(){
-    this.sidebarCollapse = !this.sidebarCollapse;
-  }
+  sideBarToggel = () => this.sidebarCollapse = !this.sidebarCollapse;
 
-  myProfileClicked(): void{
-    openDailog(this.dialog, MyProfile, '500px', {}, '').subscribe();
-  }
+  myProfileClicked = () => openDailog(this.dialog, MyProfile, '500px', {}, '').subscribe();
 
-  changePasswordClicked(): void{
-    openDailog(this.dialog, ChangePassword, '500px', {}, '').subscribe();
-  }
+  changePasswordClicked = () => openDailog(this.dialog, ChangePassword, '500px', {}, '').subscribe();
 
-  myEarningClicked(): void{
-    openDailog(this.dialog, MyEarning, '600px', {}, '').subscribe();
-  }
+  myEarningClicked = () => openDailog(this.dialog, MyEarning, '600px', {}, '').subscribe();
 
   loadNotifications(): void {
-    if(this.userRole == 'provider'){
-      this.myScheduleService.notification().subscribe((data) => {
-        this.notifications = data;
-      });
-    }
+    if(this.userRole == 'provider') this.myScheduleService.notification().subscribe(data =>  this.notifications = data);
   }
 
-  formatTimeAgo (date: string): string {
-    return formatTimeAgo(date);
-  }
+  formatTimeAgo = (date: string): string => formatTimeAgo(date);
 
   markAsRead(notificationId: number): void {
     this.confirmDailogService.confirm(MarkNotificationAsReadConfirmationDailog).then(confirmed => {

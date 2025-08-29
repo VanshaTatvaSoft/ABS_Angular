@@ -20,9 +20,7 @@ export function BreakTimeValidator(timeFormatService: TimeFormatService, data: T
     const dayStart = timeFormatService.parseToDate(data.dailyStartTime);
     const dayEnd = timeFormatService.parseToDate(data.dailyEndTime);
 
-    if (dayStart && dayEnd && (start < dayStart || end > dayEnd)) {
-      return { outsideWorkingHours: true };
-    }
+    if (dayStart && dayEnd && (start < dayStart || end > dayEnd)) return { outsideWorkingHours: true };
 
     const conflicts = data.myScheduleList.some(app => {
       const appStart = timeFormatService.parseToDate(app.startTime);

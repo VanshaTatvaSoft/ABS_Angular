@@ -41,9 +41,7 @@ export class Register {
         distinctUntilChanged(),
         switchMap(email => !email || this.registerForm.get("email")?.invalid ? of(null) : this.authService.checkEmailExist(email).pipe( catchError(() => of(false))))
       )
-      .subscribe((exists) => {
-        handelEmailValidation(this.registerForm.get("email"), !exists);
-      });
+      .subscribe(exists =>  handelEmailValidation(this.registerForm.get("email"), !exists));
   }
 
   passwordsMatchValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
@@ -66,8 +64,6 @@ export class Register {
 
   onReset = (): void => this.registerForm.reset();
 
-  getControl(name: string): FormControl {
-    return this.registerForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.registerForm.get(name) as FormControl;
 
 }

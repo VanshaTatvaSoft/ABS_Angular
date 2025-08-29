@@ -93,7 +93,6 @@ export class Service implements OnInit {
     })
   }
 
-  openAddEditServiceDialog(service?: ServiceInfo) {
+  openAddEditServiceDialog = (service?: ServiceInfo) =>
     openDailog(this.dialog, AddEditService, '500px', service ? {...service} : {}).subscribe(result => result ? this.fetchData() : null);
-  }
 }

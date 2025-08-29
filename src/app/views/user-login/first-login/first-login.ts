@@ -40,9 +40,7 @@ export class FirstLogin implements OnInit {
     return password === confirmPassword ? null : { passwordsMismatch: true };
   };
 
-  getControl(name: string): FormControl {
-    return this.firstLoginForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.firstLoginForm.get(name) as FormControl;
 
   onSubmit(): void{
     if(this.firstLoginForm.invalid) return;

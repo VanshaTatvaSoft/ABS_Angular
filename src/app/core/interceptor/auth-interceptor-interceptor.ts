@@ -8,11 +8,11 @@ export const authInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if ( req.url.endsWith('/login') || req.url.endsWith('/register') || req.url.endsWith('/check-email-exist')  || req.url.endsWith('/first-change-password')
-      || req.url.endsWith('/forgot-password') || req.url.endsWith('/reset-password-check') || req.url.endsWith('/reset-password')
-      || req.url.endsWith('/remember-me') || req.url.endsWith('/logout') || req.url.endsWith('/validate-access-token')) {
-    return next(req);
-  }
+  // if ( req.url.endsWith('/login') || req.url.endsWith('/register') || req.url.endsWith('/check-email-exist')  || req.url.endsWith('/first-change-password')
+  //     || req.url.endsWith('/forgot-password') || req.url.endsWith('/reset-password-check') || req.url.endsWith('/reset-password')
+  //     || req.url.endsWith('/remember-me') || req.url.endsWith('/logout') || req.url.endsWith('/validate-access-token')) {
+  //   return next(req);
+  // }
 
   const modifiedReq = req.clone({
     withCredentials: true
@@ -32,7 +32,7 @@ export const authInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
               return throwError(() => new Error('Unauthorized'));
             }
           }),
-          
+
           catchError(() => {
             authService.logout().subscribe();
             router.navigate(['/login']);

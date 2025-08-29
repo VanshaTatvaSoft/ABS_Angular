@@ -31,9 +31,7 @@ export class AddProvider {
     })
   }
 
-  getControl(name: string): FormControl {
-    return this.addProviderForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.addProviderForm.get(name) as FormControl;
 
   submit(): void{
     if(this.addProviderForm.invalid) return;

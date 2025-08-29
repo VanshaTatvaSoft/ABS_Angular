@@ -46,9 +46,7 @@ export class ChangePassword {
     return password === confirmPassword ? null : { passwordsMismatch: true };
   };
 
-  getControl(name: string): FormControl {
-    return this.changePasswordForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.changePasswordForm.get(name) as FormControl;
 
   close = (): void => this.dialogRef.close(false);
 

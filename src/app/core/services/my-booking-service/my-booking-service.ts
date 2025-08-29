@@ -1,44 +1,29 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { MyBookingViewModel } from '../../models/my-booking.interface';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { ResponseInterface } from '../../models/response.interface';
+import { GenericService } from '../generic-service/generic-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MyBookingService {
-  private baseUrl = `${environment.apiBaseUrl}/MyBookings`;
+  private entryPoint = 'MyBookings';
 
-  constructor(private http: HttpClient) {}
+  constructor(private generic: GenericService) {}
 
-  getMyBookings(): Observable<MyBookingViewModel>{
-    return this.http.get<MyBookingViewModel>(`${this.baseUrl}/list`);
-  }
+  getMyBookings = (): Observable<MyBookingViewModel> => this.generic.getList<MyBookingViewModel>(`${this.entryPoint}/list`);
 
-  cancelAppointment(appointmentId: number): Observable<ResponseInterface>{
-    return this.http.post<ResponseInterface>(`${this.baseUrl}/cancel/?appointmentId=${appointmentId}`, {});
-  }
+  cancelAppointment = (appointmentId: number): Observable<ResponseInterface> =>
+    this.generic.create<ResponseInterface>(`${this.entryPoint}/cancel/?appointmentId=${appointmentId}`, {});
 
-  getSlotsForReschedule(appointmentId: number, appointmentDate: string): Observable<ResponseInterface>{
-    const params = new HttpParams()
-                    .set('appointmentId', appointmentId)
-                    .set('selectedDate', appointmentDate);
 
-    return this.http.get<ResponseInterface>(`${this.baseUrl}/reschedule-json`, {params});
-  }
+  getSlotsForReschedule = (appointmentId: number, appointmentDate: string): Observable<ResponseInterface> =>
+    this.generic.getList<ResponseInterface>(`${this.entryPoint}/reschedule-json`,{ appointmentId, selectedDate: appointmentDate });
 
-  rescheduleAppointment(form: any): Observable<ResponseInterface>{
-    return this.http.post<ResponseInterface>(`${this.baseUrl}/reschedule`, form.value);
-  }
+  rescheduleAppointment = (form: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/reschedule`, form.value);
 
-  checkRatting(appointmentId: number): Observable<boolean>{
-    return this.http.get<boolean>(`${this.baseUrl}/rating/${appointmentId}`)
-  }
+  checkRatting = (appointmentId: number): Observable<boolean> => this.generic.getById<boolean>(`${this.entryPoint}/rating`, appointmentId);
 
-  ratting(rattingValue: any): Observable<ResponseInterface>{
-    return this.http.post<ResponseInterface>(`${this.baseUrl}/rating`, rattingValue);
-  }
-
+  ratting = (rattingValue: any): Observable<ResponseInterface> => this.generic.create<ResponseInterface>(`${this.entryPoint}/rating`, rattingValue);
 }

@@ -52,30 +52,23 @@ export class BookAppointment {
       next: (res) => {
         this.data = res;
         this.bookingForm = buildBookingForm(this.fb, this.data, this.timeFormatService);
-
         combineLatest([
           this.bookingForm.get('appointmentDate')!.valueChanges,
           this.bookingForm.get('startTime')!.valueChanges,
           this.bookingForm.get('endTime')!.valueChanges,
           this.bookingForm.get('serviceId')!.valueChanges
         ])
-        .pipe(
-          debounceTime(300),
-          distinctUntilChanged()
-        )
+        .pipe( debounceTime(300), distinctUntilChanged() )
         .subscribe(() => {
           this.providerId = null;
           this.selectedSlot = null;
           this.searchProvider();
         });
-
       }
     });
   }
 
-  getControl(name: string): FormControl {
-    return this.bookingForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.bookingForm.get(name) as FormControl;
 
   searchProvider(){
     const { appointmentDate, startTime, endTime, serviceId } = extractBookingFormValues(this.bookingForm.value, this.timeFormatService);

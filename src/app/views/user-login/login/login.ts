@@ -41,14 +41,11 @@ export class Login {
         distinctUntilChanged(),
         switchMap(email => !email || this.loginForm.get("email")?.invalid ? of(null) : this.authService.checkEmailExist(email).pipe( catchError(() => of(false))))
       )
-      .subscribe((exists) => {
-        handelEmailValidation(this.loginForm.get("email"), exists);
-      });
+      .subscribe(exists => handelEmailValidation(this.loginForm.get("email"), exists)
+      );
   }
 
-  getControl(name: string): FormControl {
-    return this.loginForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.loginForm.get(name) as FormControl;
 
   onSubmit(): void {
     if (this.loginForm.invalid) return;

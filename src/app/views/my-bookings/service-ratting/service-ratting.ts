@@ -33,16 +33,12 @@ export class ServiceRatting implements OnInit{
   ngOnInit(): void {
     this.myBookingService.checkRatting(this.appointmentId??0).subscribe({
       next: (res) => {
-        if(!res){
-          this.router.navigate(['/error']);
-        }
+        if(!res) this.router.navigate(['/error']);
       }
     });
   }
 
-  setRating(value: number): void {
-    this.rattingForm.get('rattingCount')?.setValue(value);
-  }
+  setRating = (value: number): void => this.rattingForm.get('rattingCount')?.setValue(value);
 
   get ratingValue(): number {
     return this.rattingForm.get('rattingCount')?.value || 0;

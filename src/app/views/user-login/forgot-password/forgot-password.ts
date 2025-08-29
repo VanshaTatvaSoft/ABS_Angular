@@ -21,9 +21,7 @@ export class ForgotPassword {
     });
   }
 
-  getControl(name: string): FormControl {
-    return this.forgotPassowrdForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.forgotPassowrdForm.get(name) as FormControl;
 
   onSubmit(): void{
     if(this.forgotPassowrdForm.invalid) return;

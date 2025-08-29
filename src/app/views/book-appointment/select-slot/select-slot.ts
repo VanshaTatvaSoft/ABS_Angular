@@ -45,9 +45,7 @@ export class SelectSlot implements OnInit{
 
   loadData(){
     this.bookingService.getAvailableSlots(this.data.appointmentDate, this.data.startTime, this.data.endTime, this.data.serviceId, this.data.providerId).subscribe({
-      next: (res) => {
-        this.data.availableSlot = res
-      }
+      next: (res) => this.data.availableSlot = res
     });
   }
 

@@ -19,7 +19,5 @@ export class ProviderRevenue {
     this.revenueList = data;
   }
 
-  close(): void {
-    this.dialogRef.close(false);
-  }
+  close = (): void => this.dialogRef.close(false);
 }

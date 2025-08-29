@@ -23,9 +23,7 @@ export function BookAppointmentStartTimeValidator(timeFormatService: TimeFormatS
       const selectedStart = new Date();
       selectedStart.setHours(hours, minutes, 0, 0);
 
-      if (selectedStart < today) {
-        return { pastTime: true }; // custom error
-      }
+      if (selectedStart < today)  return { pastTime: true };
     }
 
     return null;

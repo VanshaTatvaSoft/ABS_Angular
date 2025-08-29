@@ -8,9 +8,7 @@ export function buildBreakPayload(
   deletedBreaks: number[],
   timeFormatService: TimeFormatService
 ) {
-  const newBreaks = currentBreaks.filter((brk: any) =>
-    !brk.providerBreakId || brk.providerBreakId === 0
-  );
+  const newBreaks = currentBreaks.filter((brk: any) => !brk.providerBreakId || brk.providerBreakId === 0 );
 
   const editedBreaks = currentBreaks.filter((brk: any) => {
     if (!brk.providerBreakId) return false;
@@ -19,7 +17,7 @@ export function buildBreakPayload(
     const startChanged = timeFormatService.transform(brk.startTime, '24hr') !==
                          timeFormatService.transform(original.startTime, '24hr');
     const endChanged = timeFormatService.transform(brk.endTime, '24hr') !==
-                       timeFormatService.transform(original.endTime, '24hr');
+                        timeFormatService.transform(original.endTime, '24hr');
     return startChanged || endChanged;
   });
 

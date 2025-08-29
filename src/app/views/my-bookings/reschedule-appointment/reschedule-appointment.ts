@@ -80,22 +80,17 @@ export class RescheduleAppointment implements OnInit {
           this.appontmentDate = this.rescheduleForm.get('appointmentDate')?.value;
           this.getSlots();
         });
-
       }
     });
   }
 
   getSlots(){
     this.myBookingService.getSlotsForReschedule(this.appointmentId??0, this.appontmentDate).subscribe({
-      next: (res) => {
-        this.rescheduleData.slotsAvailable = res.data.slotsAvailable;
-      }
+      next: (res) =>  this.rescheduleData.slotsAvailable = res.data.slotsAvailable
     })
   }
 
-  close(): void {
-    this.dialogRef.close(false);
-  }
+  close = (): void => this.dialogRef.close(false);
 
   submit(): void{
     this.loaderService.show();

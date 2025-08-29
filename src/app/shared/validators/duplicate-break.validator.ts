@@ -18,9 +18,7 @@ export function DuplicateBreakValidator(timeFormatService: TimeFormatService): V
       timeFormatService.transform(ctrl.get('startTime')?.value, '24hr') === timeFormatService.transform(startTime, '24hr')
     ).length;
 
-    if (count > 1) {
-      return { duplicateStartTime: true }; // ✅ valid ValidationErrors object
-    }
+    if (count > 1) return { duplicateStartTime: true };
 
     for(const ctrl of parent.controls){
       if (ctrl === group) continue;
@@ -31,9 +29,7 @@ export function DuplicateBreakValidator(timeFormatService: TimeFormatService): V
       const otherStart = timeFormatService.transform(timeFormatService.transform(otherStartRaw, '24hr'), 'min');
       const otherEnd = timeFormatService.transform(timeFormatService.transform(otherEndRaw, '24hr'), 'min');
 
-      if (start && end && start < otherEnd && end > otherStart) {
-        return { conflict: true };
-      }
+      if (start && end && start < otherEnd && end > otherStart) return { conflict: true };
     }
 
     return null;

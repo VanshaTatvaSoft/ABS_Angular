@@ -4,19 +4,13 @@ export const startEndDateValidator: ValidatorFn = (control: AbstractControl): Va
   const startDate = control.get('startDate')?.value;
   const endDate = control.get('endDate')?.value;
 
-  if(!startDate || !endDate){
-    return null;
-  }
+  if(!startDate || !endDate) return null;
   const start = new Date(startDate);
   const end = new Date(endDate);
 
-  if (start.getTime() === end.getTime()) {
-    return { sameDate: true };
-  }
+  if (start.getTime() === end.getTime()) return { sameDate: true };
 
-  if (start > end) {
-    return { startAfterEnd: true };
-  }
+  if (start > end) return { startAfterEnd: true };
 
   return null;
 }

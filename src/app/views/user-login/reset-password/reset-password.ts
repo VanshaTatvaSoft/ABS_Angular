@@ -35,13 +35,9 @@ export class ResetPassword implements OnInit {
     );
   }
 
-  getControll(name: string): FormControl {
-    return this.resetPasswordForm.get(name) as FormControl;
-  }
+  getControll = (name: string): FormControl => this.resetPasswordForm.get(name) as FormControl;
 
-  passwordsMatchValidator: ValidatorFn = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
+  passwordsMatchValidator: ValidatorFn = ( group: AbstractControl ): ValidationErrors | null => {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { passwordsMismatch: true };

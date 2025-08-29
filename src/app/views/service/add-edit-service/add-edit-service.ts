@@ -48,9 +48,7 @@ export class AddEditService {
     });
   }
 
-  getControl(name: string): FormControl {
-    return this.serviceForm.get(name) as FormControl;
-  }
+  getControl = (name: string): FormControl => this.serviceForm.get(name) as FormControl;
 
   save() {
     if (this.serviceForm.invalid) return;

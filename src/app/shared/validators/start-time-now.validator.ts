@@ -5,13 +5,10 @@ export function startTimeNotPastValidator(timeFormatService: TimeFormatService):
   return (control: AbstractControl): ValidationErrors | null => {
     const value: string = control.value || '';
     if (!value) return null;
-    const startTime = timeFormatService.transform(value, '24hr');
     const start = timeFormatService.parseToDate(value);
     const now = new Date();
 
-    if(start && start < now){
-      return { startTimeInPast: true };
-    }
+    if(start && start < now) return { startTimeInPast: true };
 
     return null;
   }
