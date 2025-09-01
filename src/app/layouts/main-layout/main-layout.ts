@@ -17,10 +17,11 @@ import { ConfirmationService } from '../../core/services/confirmation-service/co
 import { MarkAllAsReadConfirmationDailog, MarkNotificationAsReadConfirmationDailog } from './main-layout.helper';
 import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
 import { MyEarning } from './my-earning/my-earning';
+import { ShowIfRoleDirective } from "../../directives/show-if-role-directive";
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, CommonModule, Loader, SideBar],
+  imports: [RouterOutlet, CommonModule, Loader, SideBar, ShowIfRoleDirective],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css'
 })

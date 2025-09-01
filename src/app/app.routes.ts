@@ -20,6 +20,13 @@ import { MyBookings } from './views/my-bookings/my-bookings';
 import { BookAppointment } from './views/book-appointment/book-appointment';
 import { ServiceRatting } from './views/my-bookings/service-ratting/service-ratting';
 import { TodayBreak } from './views/today-break/today-break';
+import { ProviderRevenuePage } from './views/provider/provider-revenue-page/provider-revenue-page';
+import { providerRevenueResolver } from './core/guards/provider-revenue-guard/provider-revenue-resolver';
+import { UserFormArray } from './views/user-form-array/user-form-array';
+import { userFormCanDeactivateGuard } from './core/guards/user-form-can-deactivate-guard/user-form-can-deactivate-guard';
+import { SanitizationExample } from './views/sanitization-example/sanitization-example';
+import { OnpushExample } from './views/onpush-example/onpush-example';
+import { SignalToObservable } from './views/signal-to-observable/signal-to-observable';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -71,6 +78,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
+        path: 'providers/provider-revenue',
+        component: ProviderRevenuePage,
+        canActivate: [authGuard],
+        resolve: { revenueData: providerRevenueResolver}
+      },
+      {
         path: 'my-services',
         component: MyService,
         canActivate: [authGuard],
@@ -99,6 +112,30 @@ export const routes: Routes = [
         path: 'toadys-break',
         component: TodayBreak,
         canActivate: [authGuard],
+      },
+      {
+        path: 'user-form-array',
+        component: UserFormArray,
+        canActivate: [authGuard],
+        canDeactivate: [userFormCanDeactivateGuard]
+      },
+      {
+        path: 'sanitization-example',
+        component: SanitizationExample,
+        canActivate: [authGuard],
+        canDeactivate: [userFormCanDeactivateGuard]
+      },
+      {
+        path: 'on-push-example',
+        component: OnpushExample,
+        canActivate: [authGuard],
+        canDeactivate: [userFormCanDeactivateGuard]
+      },
+      {
+        path: 'signal-observable-example',
+        component: SignalToObservable,
+        canActivate: [authGuard],
+        canDeactivate: [userFormCanDeactivateGuard]
       }
     ],
   },

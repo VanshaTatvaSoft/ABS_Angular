@@ -13,8 +13,8 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          @if(this.userRole == 'provider'){
-            <li class="nav-item dropdown" id="notificationIconBell">
+          <!-- @if(this.userRole == 'provider'){ -->
+            <li class="nav-item dropdown" id="notificationIconBell" *appShowIfRoleDirective="'provider'">
               <a class="nav-link text-dark cursor-pointer" data-bs-toggle="dropdown">
                 <i class="bi bi-bell-fill fs-5"></i>
                 <span class="navbar-badge badge fs-8 text-bg-warning" id="notificationCount">{{ notifications.length }}</span>
@@ -42,7 +42,7 @@
                 </a>
               </div>
             </li>
-          }
+          <!-- } -->
           <li class="nav-item dropdown user-menu" data-bs-auto-close="outside">
             <a class="nav-link dropdown-toggle text-dark py-0 cursor-pointer" data-bs-toggle="dropdown" >
               <span class="d-md-inline">
@@ -84,8 +84,8 @@
                     </button>
                   </div>
                 </div>
-                @if(this.userRole == 'provider'){
-                  <div class="d-flex justify-content-center align-items-center mt-2" >
+                <!-- @if(this.userRole == 'provider'){ -->
+                  <div class="d-flex justify-content-center align-items-center mt-2" *appShowIfRoleDirective="'provider'">
                     <div class="w-100">
                       <button class="btn btn-info w-100" (click)="myEarningClicked()">
                         <i class="bi bi-cash-stack"></i>
@@ -93,7 +93,7 @@
                       </button>
                     </div>
                   </div>
-                }
+                <!-- } -->
               </li>
             </ul>
           </li>

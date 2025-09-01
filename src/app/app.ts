@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { LoaderService } from './core/services/loader-service/loader-service';
 import { CommonModule } from '@angular/common';
 import { Loader } from './shared/components/loader/loader';
+import { DashboardService } from './core/services/dashboard/dashboard.service';
 
 @Component({
   selector: 'app-root',

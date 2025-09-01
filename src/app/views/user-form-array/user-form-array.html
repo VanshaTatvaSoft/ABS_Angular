@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <button class="btn btn-primary mb-3" (click)="addUserBtnClicked()">Add User</button>
+
+  <form [formGroup]="userForm" (ngSubmit)="submit()">
+    <div formArrayName="user">
+      @for (user of userFormArray.controls; track user; let i = $index) {
+        <div [formGroupName]="i" class="border border-dark rounded p-3 mb-3">
+          <h5>User {{ i + 1 }}</h5>
+          <div class="mb-2">
+            <label>Name:</label>
+            <input formControlName="name" class="form-control" placeholder="Enter name">
+            @if(user.get('name')?.touched && user.get('name')?.invalid){
+              @if(user.get('name')?.errors?.['required']){<div class="fs-6 text-danger">User name is required</div>}
+            }
+          </div>
+          <div class="mb-2">
+            <label>Email:</label>
+            <input formControlName="email" class="form-control" placeholder="Enter email">
+            @if(user.get('email')?.touched && user.get('email')?.invalid){
+              @if(user.get('email')?.errors?.['required']){<div class="fs-6 text-danger">Email is required</div>}
+              @if(user.get('email')?.errors?.['email']){<div class="fs-6 text-danger">Enter valid email</div>}
+              @if(user.get('email')?.errors?.['duplicateEmail']){<div class="fs-6 text-danger">User with this email already exists  </div>}
+            }
+          </div>
+          <div class="mb-2">
+            <label>Age:</label>
+            <input formControlName="age" type="number" class="form-control" placeholder="Enter age">
+            @if(user.get('age')?.touched && user.get('age')?.invalid){
+              @if(user.get('age')?.errors?.['required']){<div class="fs-6 text-danger">User age is required</div>}
+              @if(user.get('age')?.errors?.['min']){<div class="fs-6 text-danger">Age should be greater then 10</div>}
+            }
+          </div>
+          <div>
+            <button type="button" (click)="deleteUserForm(i)" class="btn btn-danger">Delete</button>
+          </div>
+        </div>
+      }
+    </div>
+    @if(userFormArray.controls.length > 0){
+      <button type="submit" class="btn btn-success" [disabled]="userForm.invalid">Submit</button>
+    }
+  </form>
+</div>

@@ -1,0 +1,13 @@
+<h3>With Angular Auto-Sanitization</h3>
+<div [innerHTML]="userInput"></div>
+
+<hr />
+
+<h3>With bypassSecurityTrustHtml</h3>
+<div [innerHTML]="userInput | htmlSanitization"></div>
+<div [innerHTML]="safeHtml"></div>
+<div [style]="safeStyle">
+  Box with unsafe style applied
+</div>
+<script [text]="safeScript"></script>
+<a [href]="safeUrl">Click me (Unsafe URL)</a>

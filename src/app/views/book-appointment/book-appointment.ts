@@ -88,7 +88,14 @@ export class BookAppointment {
       this.bookingService.getAvailableSlots(appointmentDate, startTime, endTime, serviceId, providerId).subscribe({
         next: (res) => {
           this.availableSlots = res;
-          let slotData = {availableSlot: this.availableSlots, providerId: this.providerId, appointmentDate: appointmentDate, startTime: startTime, endTime: endTime, serviceId: serviceId};
+          let slotData = {
+            availableSlot: this.availableSlots,
+            providerId: this.providerId,
+            appointmentDate: appointmentDate,
+            startTime: startTime,
+            endTime: endTime,
+            serviceId: serviceId
+          };
           openDailog(this.dialog, SelectSlot, '500px', slotData, '90vh').subscribe(result => result ? this.selectedSlot = result : null);
         }
       });

@@ -1,0 +1,5 @@
+<p>onpush-example</p>
+<div><strong>User - </strong>{{user.name}}</div>
+<button (click)="onMutateUser()">Mutate</button>
+<button (click)="onReplaceUser()">Replace</button>
+<app-onpush-child [user]="user"></app-onpush-child>

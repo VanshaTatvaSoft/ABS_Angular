@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GenericService } from '../generic-service/generic-service.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DashboardService {
   private endPoint = 'Dashboard'
 

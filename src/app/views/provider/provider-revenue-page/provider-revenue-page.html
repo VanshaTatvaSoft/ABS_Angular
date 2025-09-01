@@ -1,0 +1,17 @@
+@if(revenueList.length > 0){
+  @for(rev of revenueList; track rev){
+    <div class="amount-display mt-1">
+      <strong>{{rev.serviceName}}</strong>
+      <div><strong>Price - </strong>{{rev.servicePrice}}</div>
+      <div><strong>Earning - </strong>₹{{rev.serviceEarning}}</div>
+    </div>
+  }
+}
+
+@else {
+  <div class="no-data-display mt-1 d-flex justify-content-center align-items-center">
+    <div>
+      <strong>No data found</strong>
+    </div>
+  </div>
+}

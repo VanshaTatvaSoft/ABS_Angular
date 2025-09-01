@@ -13,6 +13,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   imports: [CustomInput, CommonModule, DashboardCard],
+  providers: [DashboardService],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

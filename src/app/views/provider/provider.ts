@@ -22,6 +22,7 @@ import { AuthService } from '../../core/services/auth/auth.service';
 import { openDailog } from '../../core/util/dailog-helper/dailog-helper';
 import { ProviderRevenue } from './provider-revenue/provider-revenue';
 import {MatBadgeModule} from '@angular/material/badge';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-provider',
@@ -44,7 +45,7 @@ export class Provider implements OnInit{
   searchString = '';
   selectedTabIndex = 0;
 
-  constructor(private providerService: ProviderService, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService, private myScheduleService: MyScheduleService, private authService: AuthService){}
+  constructor(private providerService: ProviderService, private dialog: MatDialog, private toastService: SweetToastService, private signalrService: SignalrService, private confirmationService: ConfirmationService, private myScheduleService: MyScheduleService, private authService: AuthService, private router: Router){}
 
   ngOnInit(): void{
     this.loadInitialData();
@@ -126,6 +127,12 @@ export class Provider implements OnInit{
 
   onRowClickes = (data: any) => this.openProviderRevenueModel(data.providerId);
 
+  onRowClickedPage = (data: any) => {
+    this.router.navigate(['providers/provider-revenue'],{
+      queryParams: { providerId: data.providerId}
+    });
+  }
+
   openAddProviderDailog = () => openDailog(this.dialog, AddProvider, '400px').subscribe(result => result ? this.getDataByServiceId() : null)
 
   openAssignServiceDialog = (providerId: number) =>
@@ -152,4 +159,6 @@ export class Provider implements OnInit{
 
   openProviderRevenueModel = (providerId: number) =>
     this.providerService.getProviderRevenue(providerId).subscribe((res) => openDailog(this.dialog, ProviderRevenue, '500px', res.revenueList, '90vh').subscribe());
+
+
 }

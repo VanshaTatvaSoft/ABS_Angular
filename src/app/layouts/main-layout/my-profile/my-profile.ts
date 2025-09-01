@@ -75,7 +75,7 @@ export class MyProfile implements OnInit {
       if (!allowedTypes.includes(this.selectedFile.type)) {
         this.fileError = 'Please upload a valid image file (jpg, png, gif, webp)';
         this.selectedFile = null;
-        event.target.value = ''; // reset file input
+        event.target.value = '';
         return;
       }
 
